@@ -1,0 +1,3884 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Prospeceve — CRM fofinho para gestão de clientes, projetos e financeiro de desenvolvimento web." />
+  <title>Prospeceve — Seu ateliê de clientes</title>
+
+  <!-- Tipografia arredondada e amigável (carrega da web quando houver internet; há fallback do sistema) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- CSS modular -->
+
+
+
+  <style>
+/* =====================================================================
+   Prospeceve · style.css
+   Base, tokens de design, fundo de céu, texturas de feltro,
+   layout geral, menu lateral e barra superior (nuvem).
+   Estética: plush / felt / kawaii · pastel · costuras · nuvens · flores
+   ===================================================================== */
+
+/* ---------------------------------------------------------------
+   1. TOKENS  (variáveis de cor, sombra, raio e espaçamento)
+   --------------------------------------------------------------- */
+:root {
+  /* Paleta pastel (baseada na referência) */
+  --sky-1:        #cdeeff;
+  --sky-2:        #a9def8;
+  --cloud:        #fbfbf7;
+  --cloud-soft:   #f1f1f1;
+
+  --green:        #8bc34a;
+  --green-deep:   #7bb03d;
+  --green-felt:   #93c85a;
+
+  /* Cor de destaque (menu lateral, botão principal, barras de progresso).
+     Trocável em Configurações → Aparência. Padrão = tema verde. */
+  --accent-felt:  var(--green-felt);
+  --accent-deep:  var(--green-deep);
+  --accent-text:  #2f4a16;
+  --accent-text-strong: #35521a;
+
+  --yellow:       #ffd54f;
+  --yellow-deep:  #f4c430;
+  --yellow-soft:  #fff9c4;
+
+  --pink:         #f48fb1;
+  --pink-soft:    #ffd7e6;
+  --blue:         #81d4fa;
+  --blue-soft:    #d5f0ff;
+  --orange:       #ffb877;
+  --lilac:        #cbb6f0;
+
+  --brown:        #5d4037;      /* texto principal (linha de costura escura) */
+  --ink:          #5d4037;
+  --ink-soft:     #8d7a70;
+  --line:         #e6ded6;
+
+  /* Sombras acolchoadas */
+  --shadow-soft:  0 8px 22px rgba(93, 64, 55, .10);
+  --shadow-card:  0 10px 26px rgba(93, 64, 55, .12);
+  --shadow-lift:  0 16px 34px rgba(93, 64, 55, .16);
+  --shadow-inset: inset 0 2px 6px rgba(255,255,255,.7), inset 0 -3px 8px rgba(93,64,55,.06);
+
+  /* Raios (nada quadrado) */
+  --r-sm: 12px;
+  --r-md: 18px;
+  --r-lg: 26px;
+  --r-xl: 34px;
+  --r-pill: 999px;
+
+  /* Espaçamento */
+  --sp-1: 6px;  --sp-2: 10px; --sp-3: 16px;
+  --sp-4: 22px; --sp-5: 30px; --sp-6: 42px;
+
+  --sidebar-w: 236px;
+  --topbar-h: 86px;
+
+  --font: 'Quicksand', 'Nunito', 'Poppins', system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Borda "de nuvem": pílula suave e uniforme nos 4 lados, com friso interno pontilhado (bordado) */
+  --cloud-radius: 30px / 38px;
+  --stitch: 2px dashed var(--line);
+
+  /* Curva de easing fluida, usada nas transições do site inteiro */
+  --ease: cubic-bezier(.22, 1, .36, 1);
+}
+
+/* Tema escuro suave (ainda fofo, "céu de anoitecer") */
+body.theme-dark {
+  --sky-1:      #3a4a6b;
+  --sky-2:      #556089;
+  --cloud:      #3f3552;
+  --cloud-soft: #4a4060;
+  --ink:        #f4eefb;
+  --ink-soft:   #cbbfe0;
+  --line:       #5a4f72;
+  --brown:      #f4eefb;
+  --green:      #86c25a;
+  --shadow-soft: 0 8px 22px rgba(0,0,0,.35);
+  --shadow-card: 0 10px 26px rgba(0,0,0,.4);
+}
+
+/* Temas de cor de destaque — trocáveis em Configurações → Aparência.
+   Mudam o menu lateral, o botão principal e as barras de progresso. */
+body.theme-accent-pink {
+  --accent-felt: #f7b3cf; --accent-deep: #e2789f;
+  --accent-text: #7a2b46; --accent-text-strong: #7a2b46;
+}
+body.theme-accent-blue {
+  --accent-felt: #8fd4f5; --accent-deep: #4fa8d8;
+  --accent-text: #1c4f66; --accent-text-strong: #1c4f66;
+}
+body.theme-accent-lilac {
+  --accent-felt: #d3b6f0; --accent-deep: #a878d6;
+  --accent-text: #4a2e6b; --accent-text-strong: #4a2e6b;
+}
+
+/* ---------------------------------------------------------------
+   2. RESET LEVE
+   --------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--ink);
+  font-weight: 500;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(1200px 600px at 15% -10%, #ffffff88, transparent 60%),
+    linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 100%);
+  background-attachment: fixed;
+  overflow: hidden; /* a rolagem acontece dentro de .content */
+}
+h1,h2,h3,h4 { margin: 0; font-weight: 700; color: var(--ink); }
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select, textarea { font-family: inherit; }
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-thumb { background: #ffffff9c; border: 3px solid transparent; background-clip: padding-box; border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 8px; }
+
+/* ---------------------------------------------------------------
+   3. LAYOUT
+   --------------------------------------------------------------- */
+.app { display: flex; height: 100vh; width: 100vw; }
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; height: 100vh; }
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-4) var(--sp-5) var(--sp-6);
+  scroll-behavior: smooth;
+}
+
+/* nuvenzinhas decorativas no rodapé de cada tela */
+.content::after {
+  content: "☁️  🌸  ☁️";
+  display: block;
+  text-align: center;
+  font-size: 20px;
+  opacity: .5;
+  letter-spacing: 18px;
+  padding: var(--sp-5) 0 var(--sp-2);
+}
+
+/* ---------------------------------------------------------------
+   4. MENU LATERAL  (feltro verde costurado)
+   --------------------------------------------------------------- */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background:
+    linear-gradient(180deg, var(--accent-felt), var(--accent-deep));
+  border-right: 3px dashed rgba(255,255,255,.55);
+  padding: var(--sp-4) var(--sp-3) var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  z-index: 40;
+  transition: width .35s var(--ease), padding .35s var(--ease);
+}
+
+.sidebar__brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 4px 6px var(--sp-3);
+  border-bottom: 2px dashed rgba(255,255,255,.5);
+  margin-bottom: var(--sp-2);
+}
+.sidebar__flower { font-size: 30px; filter: drop-shadow(0 2px 2px rgba(0,0,0,.15)); }
+.sidebar__brand-name {
+  font-size: 24px; font-weight: 700; color: var(--accent-text-strong);
+  text-shadow: 0 1px 0 rgba(255,255,255,.65), 0 -1px 0 rgba(0,0,0,.08);
+  white-space: nowrap; overflow: hidden;
+  transition: opacity .25s var(--ease);
+}
+.sidebar__collapse-btn {
+  margin-left: auto; flex-shrink: 0;
+  width: 26px; height: 26px; border-radius: 50%;
+  border: none; background: rgba(255,255,255,.4); color: var(--accent-text-strong);
+  font-weight: 700; cursor: pointer; display: grid; place-items: center;
+  transition: background .25s var(--ease), transform .25s var(--ease);
+}
+.sidebar__collapse-btn:hover { background: rgba(255,255,255,.7); }
+
+/* ---------- Modo compacto (menu recolhido, só ícones) ---------- */
+.app.sidebar-compact .sidebar { width: 82px; padding-left: var(--sp-2); padding-right: var(--sp-2); }
+.app.sidebar-compact .sidebar__brand { justify-content: center; }
+.app.sidebar-compact .sidebar__brand-name,
+.app.sidebar-compact .nav-item__label { display: none; }
+.app.sidebar-compact .sidebar__collapse-btn { margin-left: 0; transform: rotate(180deg); }
+.app.sidebar-compact .nav-item { justify-content: center; padding: 12px; }
+.app.sidebar-compact .nav-item__icon { margin: 0; }
+
+.sidebar__nav { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--r-pill);
+  color: var(--accent-text-strong);
+  font-weight: 600; font-size: 16px;
+  background: rgba(255,255,255,.14);
+  border: 2px dashed transparent;
+  transition: transform .35s var(--ease), background .35s var(--ease), box-shadow .35s var(--ease), border-color .35s var(--ease);
+}
+.nav-item__icon {
+  font-size: 20px;
+  width: 30px; height: 30px;
+  display: grid; place-items: center;
+  background: #ffffffcc;
+  border-radius: 50%;
+  box-shadow: 0 3px 6px rgba(0,0,0,.12);
+  flex-shrink: 0;
+}
+.nav-item:hover {
+  background: rgba(255,255,255,.32);
+  border-color: rgba(255,255,255,.6);
+  transform: translateX(4px);
+}
+.nav-item.is-active {
+  background: linear-gradient(180deg, var(--yellow), var(--yellow-deep));
+  color: #6a4b00;
+  border: 2px dashed #fff;
+  box-shadow: 0 8px 16px rgba(244,196,48,.45), var(--shadow-inset);
+  transform: translateX(2px);
+}
+
+.sidebar__foot { text-align: center; font-size: 22px; letter-spacing: 6px; opacity: .85; }
+
+/* ---------------------------------------------------------------
+   5. BARRA SUPERIOR  (nuvem branca acolchoada)
+   --------------------------------------------------------------- */
+.topbar {
+  height: var(--topbar-h);
+  flex-shrink: 0;
+  margin: var(--sp-3) var(--sp-4) 0;
+  padding: 0 var(--sp-4);
+  display: flex; align-items: center; gap: var(--sp-3);
+  background: var(--cloud);
+  border: 7px solid #fff;
+  border-radius: var(--cloud-radius);
+  box-shadow: var(--shadow-card);
+  position: relative;
+}
+.topbar::after {
+  content: "";
+  position: absolute; inset: 9px;
+  border: var(--stitch); border-radius: inherit;
+  opacity: .75; pointer-events: none;
+}
+.topbar__menu { display: none; }
+
+.search { position: relative; flex: 1; max-width: 560px; }
+.search__icon {
+  position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+  font-size: 16px; opacity: .6;
+}
+.search__input {
+  width: 100%; height: 48px;
+  padding: 0 18px 0 44px;
+  border-radius: var(--r-pill);
+  border: 2px dashed var(--line);
+  background: var(--cloud-soft);
+  color: var(--ink); font-size: 15px; font-weight: 500;
+  box-shadow: var(--shadow-inset);
+  transition: border-color .3s var(--ease), box-shadow .3s var(--ease);
+}
+.search__input::placeholder { color: var(--ink-soft); }
+.search__input:focus { outline: none; border-color: var(--blue); }
+.search__results {
+  position: absolute; top: 56px; left: 0; right: 0;
+  background: var(--cloud); border: 5px solid #fff;
+  border-radius: 22px; box-shadow: var(--shadow-lift);
+  padding: 8px; z-index: 60; max-height: 360px; overflow-y: auto;
+}
+.search__result {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--r-sm); cursor: pointer;
+}
+.search__result:hover { background: var(--blue-soft); }
+.search__result small { color: var(--ink-soft); margin-left: auto; }
+
+.topbar__actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+
+.profile {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 14px 6px 6px;
+  border-radius: var(--r-pill);
+  background: var(--cloud-soft);
+  border: 2px dashed var(--line);
+  box-shadow: var(--shadow-soft);
+  transition: transform .3s var(--ease);
+}
+.profile:hover { transform: translateY(-2px); }
+.profile__avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(180deg, var(--pink), #e56f95);
+  color: #fff; font-weight: 700; font-size: 14px;
+  display: grid; place-items: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,.15);
+}
+.profile__name { font-weight: 600; font-size: 14px; }
+
+/* Painel de notificações */
+.notif-panel {
+  position: absolute; top: calc(var(--topbar-h) - 6px); right: 120px;
+  width: 340px; max-height: 420px; overflow-y: auto;
+  background: var(--cloud); border: 5px solid #fff;
+  border-radius: 24px; box-shadow: var(--shadow-lift);
+  padding: 10px; z-index: 70;
+}
+.notif-panel h4 { padding: 6px 8px 10px; }
+.notif-item {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; border-radius: var(--r-sm);
+  background: var(--cloud-soft); margin-bottom: 8px;
+}
+.notif-item__ico { font-size: 18px; }
+.notif-item__txt { font-size: 13px; }
+.notif-item__txt small { display: block; color: var(--ink-soft); margin-top: 2px; }
+.notif-empty { text-align: center; color: var(--ink-soft); padding: 24px 8px; }
+
+/* Overlay (mobile) */
+.overlay {
+  position: fixed; inset: 0; background: rgba(93,64,55,.35);
+  z-index: 39; backdrop-filter: blur(1px);
+}
+
+/* Utilidades */
+.hidden { display: none !important; }
+[hidden] { display: none !important; }
+
+
+/* =====================================================================
+   Prospeceve · components.css
+   Componentes reutilizáveis: cartões-almofada, botões costurados,
+   formulários, modais, tabelas, badges de status, timeline, checklist.
+   ===================================================================== */
+
+/* ---------- Cabeçalho de página ---------- */
+.page-head {
+  display: flex; align-items: center; gap: 14px;
+  margin: var(--sp-4) 0 var(--sp-4);
+  flex-wrap: wrap;
+}
+.page-head__title { font-size: 28px; display: flex; align-items: center; gap: 10px; text-shadow: 0 1px 0 rgba(255,255,255,.7), 0 -1px 0 rgba(93,64,55,.10); }
+.page-head__sub { color: var(--ink-soft); font-size: 14px; margin-top: 2px; }
+.page-head__spacer { flex: 1; }
+
+/* ---------- Cartão-almofada (base plush) ---------- */
+.cushion {
+  position: relative;
+  background: rgba(255,255,255,.28);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2px solid rgba(255,255,255,.55);
+  border-radius: var(--cloud-radius);
+  box-shadow: var(--shadow-card);
+  padding: var(--sp-4);
+  transition: background .45s var(--ease), border-color .45s var(--ease),
+              box-shadow .45s var(--ease), transform .45s var(--ease);
+}
+.cushion:hover {
+  background: #fff;
+  border-color: #fff;
+  box-shadow: var(--shadow-lift);
+}
+/* costura interna pontilhada em volta (efeito bordado) */
+.cushion::after {
+  content: ""; position: absolute; inset: 9px;
+  border: var(--stitch); border-radius: inherit;
+  opacity: .6;
+  pointer-events: none;
+  transition: opacity .45s var(--ease);
+}
+.cushion:hover::after { opacity: .8; }
+.cushion--flat::after { display: none; }
+
+/* Título de seção estilo "nuvem" */
+.section-title {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 20px; margin-bottom: var(--sp-3);
+  text-shadow: 0 1px 0 rgba(255,255,255,.7), 0 -1px 0 rgba(93,64,55,.10);
+}
+.section-title .count-pill {
+  margin-left: auto;
+  background: var(--yellow); color: #6a4b00;
+  border-radius: var(--r-pill); padding: 3px 12px;
+  font-size: 14px; font-weight: 700;
+  box-shadow: var(--shadow-inset);
+}
+
+/* ---------- Grades ---------- */
+.grid { display: grid; gap: var(--sp-3); }
+.grid--stats { grid-template-columns: repeat(4, 1fr); }
+.grid--2 { grid-template-columns: repeat(2, 1fr); }
+.grid--3 { grid-template-columns: repeat(3, 1fr); }
+.grid--cards { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+
+/* ---------- Cartão de estatística ---------- */
+.stat {
+  position: relative; overflow: visible;
+  background: rgba(255,255,255,.26);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--cloud-radius);
+  padding: 20px 20px 18px;
+  box-shadow: var(--shadow-card);
+  border: 2px solid rgba(255,255,255,.55);
+  transition: background .45s var(--ease), border-color .45s var(--ease),
+              transform .45s var(--ease), box-shadow .45s var(--ease);
+}
+.stat::after {
+  content: ""; position: absolute; inset: 8px;
+  border: var(--stitch); border-radius: inherit;
+  opacity: .55; pointer-events: none;
+  transition: opacity .45s var(--ease);
+}
+.stat:hover {
+  background: #fff; border-color: #fff;
+  transform: translateY(-4px); box-shadow: var(--shadow-lift);
+}
+.stat:hover::after { opacity: .75; }
+.stat__ico {
+  width: 46px; height: 46px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 22px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.12), var(--shadow-inset);
+  margin-bottom: 10px;
+}
+.stat__value { font-size: 28px; font-weight: 700; line-height: 1; }
+.stat__label { color: var(--ink-soft); font-size: 13px; margin-top: 6px; font-weight: 600; }
+.stat--green  .stat__ico { background: var(--green); }
+.stat--yellow .stat__ico { background: var(--yellow); }
+.stat--pink   .stat__ico { background: var(--pink); }
+.stat--blue   .stat__ico { background: var(--blue); }
+.stat--orange .stat__ico { background: var(--orange); }
+.stat--lilac  .stat__ico { background: var(--lilac); }
+
+/* ---------- Botões ---------- */
+.pill-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 2px dashed rgba(255,255,255,.85);
+  border-radius: var(--r-pill);
+  padding: 11px 20px; font-weight: 700; font-size: 14px;
+  color: #6a4b00; background: linear-gradient(180deg, var(--yellow), var(--yellow-deep));
+  box-shadow: 0 8px 16px rgba(244,196,48,.4), var(--shadow-inset);
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease), filter .3s var(--ease);
+  position: relative; overflow: hidden;
+}
+.pill-btn:hover { transform: translateY(-2px); filter: brightness(1.03); }
+.pill-btn:active { transform: translateY(1px) scale(.98); }
+.pill-btn--green { background: linear-gradient(180deg, var(--accent-felt), var(--accent-deep)); color: var(--accent-text); box-shadow: 0 8px 16px rgba(123,176,61,.4), var(--shadow-inset); }
+.pill-btn--pink  { background: linear-gradient(180deg, var(--pink), #e56f95); color:#fff; box-shadow: 0 8px 16px rgba(244,143,177,.4), var(--shadow-inset); }
+.pill-btn--blue  { background: linear-gradient(180deg, var(--blue), #59bfef); color:#0c4f6b; box-shadow: 0 8px 16px rgba(129,212,250,.4), var(--shadow-inset); }
+.pill-btn--ghost { background: var(--cloud); color: var(--ink); border: 2px dashed var(--line); box-shadow: var(--shadow-soft); }
+.pill-btn--sm { padding: 8px 14px; font-size: 13px; }
+.pill-btn--danger { background: linear-gradient(180deg,#ff9a9a,#f27272); color:#fff; box-shadow: 0 8px 16px rgba(242,114,114,.4), var(--shadow-inset); }
+
+.icon-btn {
+  width: 48px; height: 48px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 20px;
+  border: 2px dashed var(--line); background: var(--cloud);
+  box-shadow: var(--shadow-soft); position: relative;
+  transition: transform .3s var(--ease);
+  color: var(--ink);
+}
+.icon-btn:hover { transform: translateY(-2px); }
+.icon-btn:active { transform: scale(.94); }
+.icon-btn--soft { background: var(--cloud-soft); }
+
+.badge {
+  position: absolute; top: -4px; right: -4px;
+  min-width: 20px; height: 20px; padding: 0 5px;
+  background: var(--pink); color: #fff; font-size: 11px; font-weight: 700;
+  border-radius: 999px; display: grid; place-items: center;
+  border: 2px solid var(--cloud);
+}
+
+/* ---------- Badges de status ---------- */
+.status {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: var(--r-pill);
+  font-size: 12px; font-weight: 700;
+  border: 2px dashed transparent;
+}
+.status--novo        { background: var(--blue-soft);  color:#1c6f96; }
+.status--contato     { background: #e5e0ff;           color:#5a4bb0; }
+.status--negociacao  { background: var(--yellow-soft);color:#9a7b00; }
+.status--proposta    { background: #ffe6cc;           color:#b56a1a; }
+.status--aceita      { background: #d9f2c4;           color:#4c7a1e; }
+.status--recusada    { background: #ffd7d7;           color:#b23c3c; }
+.status--producao    { background: #d5f0ff;           color:#1c6f96; }
+.status--conteudo    { background: #fff0d0;           color:#a07400; }
+.status--aprovacao   { background: #eadcff;           color:#6a44c0; }
+.status--publicado   { background: #d9f2c4;           color:#4c7a1e; }
+.status--finalizado  { background: var(--green);      color:#2f4a16; }
+.status--perdido     { background: #e9e2dd;           color:#7a6a60; }
+
+.status--pago        { background:#d9f2c4; color:#4c7a1e; }
+.status--pendente    { background:var(--yellow-soft); color:#9a7b00; }
+.status--atrasado    { background:#ffd7d7; color:#b23c3c; }
+
+/* ---------- Tabelas ---------- */
+.table-wrap { overflow-x: auto; }
+.p-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+.p-table th {
+  text-align: left; font-size: 12px; color: var(--ink-soft);
+  text-transform: uppercase; letter-spacing: .04em; padding: 4px 14px; font-weight: 700;
+}
+.p-table td {
+  background: var(--cloud); padding: 14px;
+  border-top: 2px dashed var(--line); border-bottom: 2px dashed var(--line);
+  font-size: 14px; vertical-align: middle;
+}
+.p-table tr td:first-child { border-left: 2px dashed var(--line); border-radius: var(--r-md) 0 0 var(--r-md); }
+.p-table tr td:last-child  { border-right: 2px dashed var(--line); border-radius: 0 var(--r-md) var(--r-md) 0; }
+.p-table tbody tr { transition: transform .25s var(--ease), background .25s var(--ease); }
+.p-table tbody tr:hover td { background: var(--blue-soft); }
+.row-actions { display: flex; gap: 6px; justify-content: flex-end; }
+.mini-btn {
+  border: 2px dashed var(--line); background: var(--cloud-soft);
+  border-radius: var(--r-pill); padding: 5px 12px; font-size: 12px; font-weight: 700;
+  color: var(--ink); transition: transform .25s var(--ease), background .25s var(--ease);
+}
+.mini-btn:hover { transform: translateY(-1px); background: var(--yellow-soft); }
+.mini-btn--danger:hover { background:#ffd7d7; }
+
+/* ---------- Cartão de cliente / projeto ---------- */
+.entity-card {
+  position: relative;
+  background: rgba(255,255,255,.26);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2px solid rgba(255,255,255,.55); border-radius: var(--cloud-radius);
+  padding: var(--sp-3); box-shadow: var(--shadow-card);
+  transition: background .45s var(--ease), border-color .45s var(--ease),
+              transform .45s var(--ease), box-shadow .45s var(--ease);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.entity-card::after {
+  content: ""; position: absolute; inset: 8px;
+  border: var(--stitch); border-radius: inherit;
+  opacity: .55; pointer-events: none;
+  transition: opacity .45s var(--ease);
+}
+.entity-card:hover {
+  background: #fff; border-color: #fff;
+  transform: translateY(-4px); box-shadow: var(--shadow-lift);
+}
+.entity-card:hover::after { opacity: .75; }
+.entity-card__top { display: flex; align-items: center; gap: 12px; }
+.entity-card__avatar {
+  width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
+  display: grid; place-items: center; font-weight: 700; color:#fff; font-size: 16px;
+  background: linear-gradient(180deg, var(--blue), #59bfef);
+  box-shadow: var(--shadow-inset);
+}
+.entity-card__name { font-weight: 700; font-size: 16px; }
+.entity-card__meta { color: var(--ink-soft); font-size: 13px; }
+.entity-card__row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-soft); }
+.entity-card__foot { display:flex; align-items:center; gap:8px; margin-top: auto; padding-top: 6px; }
+.entity-card__bar { flex:1; }
+
+/* ---------- Barra de progresso ---------- */
+.pbar { height: 14px; border-radius: 999px; background: var(--cloud-soft);
+  box-shadow: var(--shadow-inset); overflow: hidden; }
+.pbar__fill { height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent-felt), var(--accent-deep)); transition: width .5s ease; }
+.pbar--blue   .pbar__fill { background: linear-gradient(90deg,#8ed6f8,var(--blue)); }
+.pbar--yellow .pbar__fill { background: linear-gradient(90deg,#ffe27a,var(--yellow)); }
+.pbar--pink   .pbar__fill { background: linear-gradient(90deg,#ffb0cd,var(--pink)); }
+.progress-row { display:flex; align-items:center; gap: 12px; margin-bottom: 12px; }
+.progress-row__label { width: 170px; font-size: 14px; font-weight: 600; }
+.progress-row__pct { width: 48px; text-align: right; font-weight: 700; }
+
+/* ---------- Toolbar de filtros ---------- */
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: var(--sp-3); }
+.field-inline { display: flex; align-items: center; gap: 6px; }
+.select, .input, .textarea {
+  border: 2px dashed var(--line); border-radius: var(--r-md);
+  background: var(--cloud); color: var(--ink); font-size: 14px; font-weight: 500;
+  padding: 10px 14px; box-shadow: var(--shadow-inset);
+}
+.select:focus, .input:focus, .textarea:focus { outline: none; border-color: var(--blue); }
+.textarea { width: 100%; min-height: 84px; resize: vertical; }
+
+/* ---------- Formulários / Modal ---------- */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(93,64,55,.34); backdrop-filter: blur(2px);
+  display: grid; place-items: center; padding: 20px;
+}
+.modal {
+  position: relative;
+  width: min(760px, 100%); max-height: 90vh; overflow-y: auto;
+  background: var(--cloud);
+  border-radius: var(--cloud-radius); border: 7px solid #fff;
+  box-shadow: var(--shadow-lift); padding: var(--sp-4) var(--sp-5) var(--sp-5);
+}
+.modal--wide { width: min(940px, 100%); }
+.modal__head { display: flex; align-items: center; gap: 10px; margin-bottom: var(--sp-3); }
+.modal__title { font-size: 22px; text-shadow: 0 1px 0 rgba(255,255,255,.7), 0 -1px 0 rgba(93,64,55,.10); }
+.modal__close {
+  margin-left: auto; width: 40px; height: 40px; border-radius: 50%;
+  border: 2px dashed var(--line); background: var(--cloud-soft); font-size: 18px;
+}
+.modal__close:hover { background: #ffd7d7; }
+
+.form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.form-grid--3 { grid-template-columns: repeat(3, 1fr); }
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+.form-field label { font-size: 13px; font-weight: 700; color: var(--ink-soft); }
+.form-field .input, .form-field .select, .form-field .textarea { width: 100%; }
+.form-field--full { grid-column: 1 / -1; }
+.form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: var(--sp-4); }
+.form-subtitle { grid-column: 1/-1; font-weight: 700; color: var(--ink); margin-top: 8px;
+  display:flex; align-items:center; gap: 8px; }
+
+/* ---------- Timeline de projeto ---------- */
+.timeline { display: flex; flex-direction: column; gap: 4px; }
+.tl-step {
+  display: grid; grid-template-columns: 34px 1fr auto; gap: 12px; align-items: center;
+  padding: 12px 14px; border-radius: var(--r-md);
+  background: var(--cloud); border: 2px dashed var(--line); margin-bottom: 8px;
+}
+.tl-step__dot {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 15px;
+  background: var(--cloud-soft); box-shadow: var(--shadow-inset);
+}
+.tl-step.is-done  .tl-step__dot { background: var(--green); color:#fff; }
+.tl-step.is-doing .tl-step__dot { background: var(--yellow); }
+.tl-step__name { font-weight: 700; }
+.tl-step__meta { font-size: 12px; color: var(--ink-soft); }
+
+/* ---------- Checklist ---------- */
+.check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr)); gap: 10px; }
+.check-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: var(--r-md);
+  background: var(--cloud-soft); border: 2px dashed var(--line);
+  cursor: pointer; user-select: none; transition: background .3s var(--ease);
+}
+.check-item:hover { background: var(--blue-soft); }
+.check-item.is-done { background: #eaf7dd; border-color: var(--green); }
+.check-box {
+  width: 24px; height: 24px; border-radius: 8px; flex-shrink: 0;
+  border: 2px dashed var(--ink-soft); display: grid; place-items: center;
+  font-size: 14px; color: #fff; background: var(--cloud);
+}
+.check-item.is-done .check-box { background: var(--green); border-style: solid; border-color: var(--green); }
+
+/* ---------- Estado vazio ---------- */
+.empty {
+  text-align: center; padding: var(--sp-6) var(--sp-4); color: var(--ink-soft);
+}
+.empty__emoji { font-size: 52px; display: block; margin-bottom: 10px; }
+.empty__title { font-size: 18px; color: var(--ink); font-weight: 700; margin-bottom: 6px; }
+
+/* ---------- Detalhe / ficha ---------- */
+.detail-grid { display: grid; grid-template-columns: 300px 1fr; gap: var(--sp-3); align-items: start; }
+.info-list { display: grid; gap: 10px; }
+.info-list__row { display: flex; gap: 10px; font-size: 14px; }
+.info-list__row b { color: var(--ink-soft); min-width: 128px; font-weight: 700; }
+.tabs { display: flex; gap: 8px; margin-bottom: var(--sp-3); flex-wrap: wrap; }
+.tab {
+  padding: 8px 16px; border-radius: var(--r-pill); font-weight: 700; font-size: 14px;
+  background: var(--cloud); border: 2px dashed var(--line); color: var(--ink-soft);
+}
+.tab.is-active { background: var(--yellow); color:#6a4b00; box-shadow: var(--shadow-inset); }
+
+/* Chips */
+.chip { display:inline-flex; align-items:center; gap:6px; background: var(--cloud-soft);
+  border:2px dashed var(--line); border-radius: var(--r-pill); padding: 4px 12px; font-size:12px; font-weight:700; }
+
+/* ---------- Toasts ---------- */
+.toast-root { position: fixed; bottom: 22px; right: 22px; z-index: 200; display:flex; flex-direction:column; gap:10px; }
+.toast {
+  background: var(--cloud); border: 2px dashed var(--line);
+  border-radius: var(--r-md); box-shadow: var(--shadow-lift);
+  padding: 12px 18px; font-weight: 600; display:flex; align-items:center; gap:10px;
+  min-width: 240px;
+}
+.toast--ok    { border-color: var(--green); }
+.toast--info  { border-color: var(--blue); }
+.toast--warn  { border-color: var(--yellow-deep); }
+.toast--error { border-color: #f27272; }
+
+/* Calendário */
+.cal-head { display:flex; align-items:center; gap: 12px; margin-bottom: var(--sp-3); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+.cal-dow { text-align:center; font-weight:700; font-size:12px; color: var(--ink-soft); padding: 4px; }
+.cal-cell {
+  min-height: 92px; border-radius: var(--r-md); background: var(--cloud);
+  border: 2px dashed var(--line); padding: 8px; display:flex; flex-direction:column; gap: 4px;
+}
+.cal-cell.is-out { opacity: .4; }
+.cal-cell.is-today { border-color: var(--pink); box-shadow: 0 0 0 2px var(--pink-soft) inset; }
+.cal-cell__num { font-weight: 700; font-size: 13px; }
+.cal-event { font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 8px;
+  background: var(--blue-soft); color:#1c6f96; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.cal-event--pay { background: var(--yellow-soft); color:#9a7b00; }
+.cal-event--del { background:#d9f2c4; color:#4c7a1e; }
+.cal-event--fup { background: var(--pink-soft); color:#b23c73; }
+
+/* ---------- Dashboard: quadros arrastáveis e redimensionáveis ---------- */
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: 20px;
+  gap: 16px;
+  margin-top: 4px;
+}
+.dash-widget {
+  min-width: 0; min-height: 0;
+  display: flex; flex-direction: column;
+}
+.dash-widget__head {
+  display: flex; align-items: center; gap: 8px;
+  margin: -2px 0 8px; cursor: grab; user-select: none;
+  font-weight: 700; font-size: 14px; color: var(--ink);
+}
+.dash-widget__head:active { cursor: grabbing; }
+.dash-widget__drag { opacity: .45; font-size: 14px; }
+.dash-widget__remove {
+  margin-left: auto; border: none; background: none; cursor: pointer;
+  opacity: .4; font-size: 13px; padding: 2px 4px; border-radius: 6px;
+  transition: opacity .2s var(--ease), background .2s var(--ease);
+}
+.dash-widget__remove:hover { opacity: 1; background: #ffd7d7; }
+.dash-widget__body { flex: 1; min-height: 0; overflow: auto; }
+.dash-widget__resize {
+  position: absolute; right: 6px; bottom: 6px; width: 18px; height: 18px;
+  cursor: nwse-resize; opacity: .3; z-index: 2;
+  background:
+    linear-gradient(135deg, transparent 0 40%, var(--ink-soft) 40% 46%, transparent 46% 60%, var(--ink-soft) 60% 66%, transparent 66%);
+  transition: opacity .2s var(--ease);
+}
+.dash-widget__resize:hover { opacity: .8; }
+.dash-widget.is-dragging { opacity: .45; }
+.dash-widget.is-drop-target { outline: 3px dashed var(--blue); outline-offset: 3px; border-radius: var(--cloud-radius); }
+.dash-widget.is-resizing, .dash-widget.is-resizing * { transition: none !important; }
+
+/* variação compacta dos quadros de estatística dentro do sistema de widgets */
+.dash-widget .stat { height: 100%; margin: 0; }
+.dash-widget .cushion { height: 100%; margin: 0; box-sizing: border-box; }
+
+.dash-add-btn {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; height: 100%; min-height: 120px;
+  border: 2px dashed var(--line); border-radius: var(--cloud-radius);
+  background: rgba(255,255,255,.15); color: var(--ink-soft);
+  font-weight: 700; cursor: pointer;
+  transition: background .3s var(--ease), border-color .3s var(--ease), color .3s var(--ease);
+}
+.dash-add-btn:hover { background: #fff; border-color: var(--blue); color: var(--ink); }
+.dash-add-btn__ico { font-size: 26px; }
+
+/* modal de escolha de widgets */
+.widget-picker { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 6px; }
+.widget-pick {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px; border-radius: var(--r-md); border: 2px dashed var(--line);
+  background: var(--cloud-soft); cursor: pointer; text-align: left;
+  transition: background .2s var(--ease), transform .2s var(--ease);
+}
+.widget-pick:hover { background: #fff; transform: translateY(-2px); }
+.widget-pick__ico { font-size: 22px; }
+.widget-pick__label { font-weight: 700; font-size: 13.5px; }
+.widget-pick__desc { font-size: 11.5px; color: var(--ink-soft); }
+
+@media (max-width: 900px) {
+  .dash-grid { grid-template-columns: repeat(4, 1fr); }
+  .dash-widget { grid-column: 1 / -1 !important; }
+  .dash-widget__resize, .dash-widget__drag { display: none; }
+  .dash-widget__head { cursor: default; }
+}
+
+/* ---------- Seletor de cor de destaque (accent) ---------- */
+.accent-swatch {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px 8px 8px; border-radius: var(--r-pill);
+  border: 2px solid transparent; background: var(--cloud-soft);
+  font-weight: 700; font-size: 13.5px; color: var(--ink); cursor: pointer;
+  transition: border-color .25s var(--ease), transform .25s var(--ease);
+}
+.accent-swatch:hover { transform: translateY(-2px); }
+.accent-swatch.is-active { border-color: var(--swatch-color); background: #fff; }
+.accent-swatch__dot {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--swatch-color); box-shadow: 0 2px 4px rgba(0,0,0,.2);
+}
+
+/* ---------- Ações rápidas (widget do dashboard) ---------- */
+.quick-actions { display: flex; flex-direction: column; gap: 10px; }
+.quick-action {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; border-radius: var(--r-md); border: none;
+  font-weight: 700; font-size: 15px; color: #2f4a16; cursor: pointer;
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+  box-shadow: var(--shadow-soft);
+}
+.quick-action:hover { transform: translateY(-2px) scale(1.01); box-shadow: var(--shadow-lift); }
+.quick-action__ico {
+  width: 34px; height: 34px; border-radius: 50%; background: #ffffffb0;
+  display: grid; place-items: center; font-size: 17px; flex-shrink: 0;
+}
+.quick-action--green  { background: linear-gradient(180deg, var(--green), var(--green-deep)); }
+.quick-action--blue   { background: linear-gradient(180deg, var(--blue), #59bfef); color: #10475e; }
+.quick-action--yellow { background: linear-gradient(180deg, var(--yellow), var(--yellow-deep)); color: #6a4b00; }
+
+
+/* =====================================================================
+   Prospeceve · animations.css
+   Tela de carregamento, nuvens flutuando e micro-animações (só CSS).
+   ===================================================================== */
+
+/* ---------- Tela de carregamento ---------- */
+.loading-screen {
+  position: fixed; inset: 0; z-index: 500;
+  display: grid; place-items: center;
+  background: linear-gradient(180deg, #bfe8ff 0%, #8fd0f5 100%);
+  overflow: hidden;
+  transition: opacity .6s ease, visibility .6s ease;
+}
+.loading-screen.is-hidden { opacity: 0; visibility: hidden; }
+
+.loading-sky { position: absolute; inset: 0; }
+.cloud {
+  position: absolute; display: block;
+  width: 160px; height: 60px; background: #fff; border-radius: 60px;
+  filter: drop-shadow(0 10px 16px rgba(0,0,0,.08));
+  opacity: .95;
+}
+.cloud::before, .cloud::after {
+  content: ""; position: absolute; background: #fff; border-radius: 50%;
+}
+.cloud::before { width: 70px; height: 70px; top: -30px; left: 24px; }
+.cloud::after  { width: 96px; height: 96px; top: -46px; right: 24px; }
+.cloud--1 { top: 16%;  left: -180px; transform: scale(1);   animation: drift 26s linear infinite; }
+.cloud--2 { top: 42%;  left: -180px; transform: scale(.7);  animation: drift 34s linear infinite 4s; }
+.cloud--3 { top: 66%;  left: -180px; transform: scale(1.2); animation: drift 30s linear infinite 8s; }
+.cloud--4 { top: 82%;  left: -180px; transform: scale(.6);  animation: drift 22s linear infinite 2s; }
+
+@keyframes drift { to { left: 110%; } }
+
+.loading-content { position: relative; text-align: center; z-index: 2; animation: pop .6s ease both; }
+.loading-logo { font-size: 78px; animation: bob 2.4s ease-in-out infinite; filter: drop-shadow(0 6px 6px rgba(0,0,0,.12)); }
+.loading-title {
+  font-size: 46px; color: #35521a; margin-top: 4px;
+  text-shadow: 0 2px 0 rgba(255,255,255,.6);
+}
+.loading-message { color: #3a5f75; font-weight: 600; margin: 6px 0 22px; }
+.loading-bar {
+  width: 280px; height: 18px; margin: 0 auto;
+  background: #ffffff8c; border-radius: 999px; overflow: hidden;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,.12); border: 2px dashed #ffffff;
+}
+.loading-bar__fill {
+  height: 100%; width: 0%; border-radius: 999px;
+  background: linear-gradient(90deg, #8ed6f8, #59bfef);
+  transition: width .3s ease;
+}
+.loading-percent { display: inline-block; margin-top: 8px; color: #3a5f75; font-weight: 700; }
+
+@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes pop { from { transform: scale(.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(7px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(3px); }
+}
+
+/* ---------- Tela de login ---------- */
+.login-screen {
+  position: fixed; inset: 0; z-index: 600;
+  display: grid; place-items: center;
+  background: linear-gradient(180deg, #bfe8ff 0%, #8fd0f5 100%);
+  overflow: hidden;
+  transition: opacity .5s var(--ease), visibility .5s var(--ease);
+}
+.login-screen.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.login-sky { position: absolute; inset: 0; }
+.login-card {
+  position: relative; z-index: 2;
+  width: min(380px, 88vw);
+  text-align: center;
+  animation: pop .5s var(--ease) both;
+  background: #fff !important; /* sempre opaco, mesmo com o hover-transparente do .cushion */
+}
+.login-card__logo { font-size: 52px; animation: bob 2.4s ease-in-out infinite; }
+.login-card__title {
+  font-size: 30px; color: #35521a; margin-top: 2px;
+  text-shadow: 0 1px 0 rgba(255,255,255,.7), 0 -1px 0 rgba(93,64,55,.10);
+}
+.login-card__sub { color: var(--ink-soft); font-size: 13.5px; margin: 6px 0 18px; }
+.login-card .form-field { text-align: left; margin-bottom: 12px; }
+.login-card__remember {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--ink-soft); margin: 4px 0 16px; cursor: pointer;
+}
+.login-card__error {
+  background: #ffe3e3; color: #b23b3b; border-radius: var(--r-sm);
+  padding: 8px 10px; font-size: 13px; font-weight: 600; margin-bottom: 12px;
+}
+.login-card__submit { width: 100%; justify-content: center; font-size: 16px; padding: 12px; }
+
+/* ---------- Entrada de telas ---------- */
+.fade-in { animation: fadeIn .4s ease both; }
+.rise-in { animation: riseIn .45s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* stagger leve para cartões */
+.stagger > * { animation: riseIn .45s cubic-bezier(.2,.8,.2,1) both; }
+.stagger > *:nth-child(1){ animation-delay: .02s; }
+.stagger > *:nth-child(2){ animation-delay: .06s; }
+.stagger > *:nth-child(3){ animation-delay: .10s; }
+.stagger > *:nth-child(4){ animation-delay: .14s; }
+.stagger > *:nth-child(5){ animation-delay: .18s; }
+.stagger > *:nth-child(6){ animation-delay: .22s; }
+.stagger > *:nth-child(7){ animation-delay: .26s; }
+.stagger > *:nth-child(8){ animation-delay: .30s; }
+
+/* ---------- Modal ---------- */
+.modal-backdrop { animation: fadeIn .2s ease both; }
+.modal { animation: modalPop .3s cubic-bezier(.2,.9,.2,1) both; }
+@keyframes modalPop { from { transform: translateY(16px) scale(.96); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ---------- Toast ---------- */
+.toast { animation: toastIn .35s cubic-bezier(.2,.9,.2,1) both; }
+.toast.is-out { animation: toastOut .3s ease forwards; }
+@keyframes toastIn  { from { transform: translateX(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes toastOut { to   { transform: translateX(30px); opacity: 0; } }
+
+/* ---------- Efeito ripple nos botões ---------- */
+.pill-btn .ripple {
+  position: absolute; border-radius: 50%; transform: scale(0);
+  background: rgba(255,255,255,.55); animation: ripple .6s ease-out;
+  pointer-events: none;
+}
+@keyframes ripple { to { transform: scale(2.6); opacity: 0; } }
+
+/* ---------- Brilho suave (glow) em destaque ---------- */
+.glow { animation: glow 2.6s ease-in-out infinite; }
+@keyframes glow {
+  0%,100% { box-shadow: var(--shadow-card); }
+  50% { box-shadow: 0 12px 30px rgba(129,212,250,.5); }
+}
+
+/* ---------- Flor girando devagar (decoração) ---------- */
+.spin-slow { animation: spin 12s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- Respeitar preferência de menos movimento ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .cloud { animation: none; }
+}
+
+
+/* =====================================================================
+   Prospeceve · responsive.css
+   Desktop · Notebook · Tablet · Celular
+   ===================================================================== */
+
+/* Notebook / telas médias */
+@media (max-width: 1180px) {
+  .grid--stats { grid-template-columns: repeat(2, 1fr); }
+  .grid--3 { grid-template-columns: repeat(2, 1fr); }
+  .detail-grid { grid-template-columns: 1fr; }
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  :root { --sidebar-w: 230px; }
+
+  /* Menu vira gaveta deslizante */
+  .sidebar {
+    position: fixed; inset: 0 auto 0 0; z-index: 45;
+    transform: translateX(-104%); transition: transform .3s cubic-bezier(.2,.8,.2,1);
+  }
+  .app.sidebar-open .sidebar { transform: translateX(0); }
+  .app:not(.sidebar-open) .overlay { display: none !important; }
+
+  .topbar__menu { display: grid; }
+  .grid--2 { grid-template-columns: 1fr; }
+  .form-grid, .form-grid--3 { grid-template-columns: repeat(2, 1fr); }
+  .progress-row__label { width: 120px; }
+
+  /* no celular a sidebar já é uma gaveta; o modo compacto não se aplica */
+  .sidebar__collapse-btn { display: none; }
+  .app.sidebar-compact .sidebar { width: var(--sidebar-w); }
+  .app.sidebar-compact .sidebar__brand-name,
+  .app.sidebar-compact .nav-item__label { display: inline; }
+}
+
+/* Celular */
+@media (max-width: 620px) {
+  .content { padding: var(--sp-3) var(--sp-3) var(--sp-6); }
+  .topbar { margin: 10px 12px 0; padding: 0 12px; height: 74px; gap: 8px; }
+  .topbar__actions { gap: 6px; }
+
+  /* Esconde textos longos no topo, mantém ícones */
+  .pill-btn--yellow#btn-new-client { padding: 10px 12px; font-size: 0; }
+  .pill-btn--yellow#btn-new-client span { font-size: 20px; }
+  .profile__name { display: none; }
+  .notif-panel { right: 10px; width: calc(100vw - 20px); }
+
+  .grid--stats { grid-template-columns: repeat(2, 1fr); }
+  .stat__value { font-size: 22px; }
+  .page-head__title { font-size: 22px; }
+
+  /* bordas finas e discretas, consistentes em qualquer tamanho de tela */
+
+  .form-grid, .form-grid--3 { grid-template-columns: 1fr; }
+  .modal { padding: var(--sp-4) var(--sp-3); }
+
+  .cal-cell { min-height: 62px; }
+  .cal-event { font-size: 9px; }
+
+  .icon-btn { width: 42px; height: 42px; font-size: 18px; }
+  .info-list__row b { min-width: 100px; }
+}
+
+/* Telas bem pequenas */
+@media (max-width: 400px) {
+  .grid--stats { grid-template-columns: 1fr; }
+  .cal-dow { font-size: 10px; }
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- ======================= TELA DE LOGIN ======================= -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-sky">
+      <span class="cloud cloud--1"></span>
+      <span class="cloud cloud--2"></span>
+      <span class="cloud cloud--3"></span>
+    </div>
+    <form id="login-form" class="login-card cushion" autocomplete="off">
+      <div class="login-card__logo">🌸</div>
+      <h1 class="login-card__title">Prospeceve</h1>
+      <p class="login-card__sub">Seu ateliê de clientes é só seu. Entre para continuar 🔒</p>
+
+      <div class="form-field form-field--full">
+        <label for="login-user">Usuário</label>
+        <input class="input" id="login-user" name="username" placeholder="Seu usuário" autocomplete="username" required>
+      </div>
+      <div class="form-field form-field--full">
+        <label for="login-pass">Senha</label>
+        <input class="input" id="login-pass" name="password" type="password" placeholder="Sua senha" autocomplete="current-password" required>
+      </div>
+
+      <label class="login-card__remember">
+        <input type="checkbox" id="login-remember" checked> Manter conectado neste navegador
+      </label>
+
+      <p class="login-card__error" id="login-error" hidden>🙈 Usuário ou senha incorretos. Tente de novo!</p>
+
+      <button type="submit" class="pill-btn pill-btn--green login-card__submit">🔑 Entrar</button>
+    </form>
+  </div>
+
+  <!-- ======================= TELA DE CARREGAMENTO ======================= -->
+  <div id="loading-screen" class="loading-screen" aria-hidden="true" hidden>
+    <div class="loading-sky">
+      <span class="cloud cloud--1"></span>
+      <span class="cloud cloud--2"></span>
+      <span class="cloud cloud--3"></span>
+      <span class="cloud cloud--4"></span>
+    </div>
+
+    <div class="loading-content">
+      <div class="loading-logo">🌸</div>
+      <h1 class="loading-title">Prospeceve</h1>
+      <p class="loading-message">Preparando seu espaço de trabalho…</p>
+      <div class="loading-bar">
+        <div class="loading-bar__fill" id="loading-bar-fill"></div>
+      </div>
+      <span class="loading-percent" id="loading-percent">0%</span>
+    </div>
+  </div>
+
+  <!-- ======================= APLICAÇÃO ======================= -->
+  <div id="app" class="app" hidden>
+
+    <!-- ---------- MENU LATERAL (tecido costurado) ---------- -->
+    <aside class="sidebar" id="sidebar" aria-label="Menu principal">
+      <div class="sidebar__brand">
+        <span class="sidebar__flower">🌷</span>
+        <span class="sidebar__brand-name">Prospeceve</span>
+        <button type="button" class="sidebar__collapse-btn" id="sidebar-collapse-btn"
+          aria-label="Recolher menu" title="Recolher menu">«</button>
+      </div>
+
+      <nav class="sidebar__nav" aria-label="Navegação">
+        <a class="nav-item" href="#/dashboard" data-route="dashboard">
+          <span class="nav-item__icon">🏠</span><span class="nav-item__label">Dashboard</span>
+        </a>
+        <a class="nav-item" href="#/clientes" data-route="clientes">
+          <span class="nav-item__icon">🧵</span><span class="nav-item__label">Clientes</span>
+        </a>
+        <a class="nav-item" href="#/projetos" data-route="projetos">
+          <span class="nav-item__icon">🌼</span><span class="nav-item__label">Projetos</span>
+        </a>
+        <a class="nav-item" href="#/financeiro" data-route="financeiro">
+          <span class="nav-item__icon">🪙</span><span class="nav-item__label">Financeiro</span>
+        </a>
+        <a class="nav-item" href="#/calendario" data-route="calendario">
+          <span class="nav-item__icon">📅</span><span class="nav-item__label">Calendário</span>
+        </a>
+        <a class="nav-item" href="#/relatorios" data-route="relatorios">
+          <span class="nav-item__icon">📋</span><span class="nav-item__label">Relatórios</span>
+        </a>
+        <a class="nav-item" href="#/arquivos" data-route="arquivos">
+          <span class="nav-item__icon">☁️</span><span class="nav-item__label">Arquivos</span>
+        </a>
+        <a class="nav-item" href="#/configuracoes" data-route="configuracoes">
+          <span class="nav-item__icon">⚙️</span><span class="nav-item__label">Configurações</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- ---------- CONTEÚDO ---------- -->
+    <div class="main">
+
+      <!-- Topo em formato de nuvem -->
+      <header class="topbar">
+        <button class="icon-btn topbar__menu" id="menu-toggle" aria-label="Abrir menu">☰</button>
+
+        <div class="search">
+          <span class="search__icon" aria-hidden="true">🔍</span>
+          <input class="search__input" id="global-search" type="search"
+                 placeholder="Pesquisar clientes, projetos, cidade…" aria-label="Pesquisar" autocomplete="off" />
+          <div class="search__results" id="search-results" hidden></div>
+        </div>
+
+        <div class="topbar__actions">
+          <button class="pill-btn pill-btn--yellow" id="btn-new-client">
+            <span aria-hidden="true">＋</span> Novo cliente
+          </button>
+
+          <button class="icon-btn icon-btn--soft" id="btn-notifications" aria-label="Notificações">
+            🔔<span class="badge" id="notif-badge" hidden>0</span>
+          </button>
+          <div class="notif-panel" id="notif-panel" hidden></div>
+
+          <button class="icon-btn icon-btn--soft" id="btn-theme" aria-label="Alternar tema">🌙</button>
+
+          <button class="profile" id="btn-profile" aria-label="Perfil">
+            <span class="profile__avatar" id="profile-avatar">EU</span>
+            <span class="profile__name" id="profile-name">Você</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Onde cada tela é injetada pela SPA -->
+      <main class="content" id="app-content" tabindex="-1">
+        <!-- renderizado por router.js -->
+      </main>
+    </div>
+
+    <!-- Overlay do menu no mobile -->
+    <div class="overlay" id="overlay" hidden></div>
+  </div>
+
+  <!-- ---------- Raiz de modais e toasts ---------- -->
+  <div id="modal-root"></div>
+  <div id="toast-root" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- ======================= JAVASCRIPT MODULAR (ordem importa) ======================= -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+/* =====================================================================
+   Prospeceve · utils.js
+   Funções utilitárias reutilizáveis. Tudo exposto em window.PP.Utils.
+   ===================================================================== */
+(function () {
+  'use strict';
+  window.PP = window.PP || {};
+
+  const Utils = {
+    /** Gera um id único curto. */
+    uid(prefix = 'id') {
+      return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    },
+
+    /** Escapa HTML para evitar quebra de layout / injeção ao renderizar strings. */
+    esc(str) {
+      if (str == null) return '';
+      return String(str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    },
+
+    /** Formata número como moeda brasileira. */
+    money(value) {
+      const n = Number(value) || 0;
+      return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    },
+
+    /** Converte ISO (yyyy-mm-dd) para dd/mm/aaaa. Retorna '—' se vazio. */
+    dateBR(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso + (iso.length === 10 ? 'T00:00:00' : ''));
+      if (isNaN(d)) return '—';
+      return d.toLocaleDateString('pt-BR');
+    },
+
+    /** Data de hoje em ISO (yyyy-mm-dd). */
+    today() {
+      return new Date().toISOString().slice(0, 10);
+    },
+
+    /** Diferença em dias entre hoje e uma data ISO (positivo = futuro). */
+    daysUntil(iso) {
+      if (!iso) return null;
+      const d = new Date(iso + 'T00:00:00');
+      const now = new Date(); now.setHours(0, 0, 0, 0);
+      return Math.round((d - now) / 86400000);
+    },
+
+    /** Iniciais de um nome para avatar. */
+    initials(name) {
+      if (!name) return '??';
+      const parts = name.trim().split(/\s+/);
+      return ((parts[0]?.[0] || '') + (parts[1]?.[0] || parts[0]?.[1] || '')).toUpperCase();
+    },
+
+    /** Cria elemento a partir de string HTML e retorna o primeiro nó. */
+    fromHTML(html) {
+      const t = document.createElement('template');
+      t.innerHTML = html.trim();
+      return t.content.firstElementChild;
+    },
+
+    /** Atalho para querySelector. */
+    qs(sel, root = document) { return root.querySelector(sel); },
+    qsa(sel, root = document) { return Array.from(root.querySelectorAll(sel)); },
+
+    /** Debounce simples (para a busca instantânea). */
+    debounce(fn, wait = 220) {
+      let t;
+      return function (...args) {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+      };
+    },
+
+    /** Toast de feedback. tipo: ok | info | warn | error */
+    toast(message, type = 'ok', emoji) {
+      const root = document.getElementById('toast-root');
+      if (!root) return;
+      const ico = emoji || ({ ok: '✅', info: '💬', warn: '⚠️', error: '❌' }[type] || '✨');
+      const el = Utils.fromHTML(
+        `<div class="toast toast--${type}"><span>${ico}</span><span>${Utils.esc(message)}</span></div>`
+      );
+      root.appendChild(el);
+      setTimeout(() => {
+        el.classList.add('is-out');
+        el.addEventListener('animationend', () => el.remove());
+      }, 2600);
+    },
+
+    /** Confirmação fofa (Promise<boolean>) via modal. */
+    confirm(message, { okText = 'Sim', cancelText = 'Cancelar', danger = false } = {}) {
+      return new Promise((resolve) => {
+        const root = document.getElementById('modal-root');
+        const back = Utils.fromHTML(`
+          <div class="modal-backdrop">
+            <div class="modal" style="max-width:420px" role="alertdialog" aria-modal="true">
+              <div class="modal__head"><h3 class="modal__title">🌸 Confirmação</h3></div>
+              <p style="margin:0 0 8px">${Utils.esc(message)}</p>
+              <div class="form-actions">
+                <button class="pill-btn pill-btn--ghost" data-act="cancel">${Utils.esc(cancelText)}</button>
+                <button class="pill-btn ${danger ? 'pill-btn--danger' : ''}" data-act="ok">${Utils.esc(okText)}</button>
+              </div>
+            </div>
+          </div>`);
+        root.appendChild(back);
+        const done = (val) => { back.remove(); resolve(val); };
+        back.addEventListener('click', (e) => {
+          if (e.target === back) done(false);
+          const act = e.target.closest('[data-act]')?.dataset.act;
+          if (act === 'ok') done(true);
+          if (act === 'cancel') done(false);
+        });
+      });
+    },
+
+    /** Efeito ripple ao clicar em botões-pílula. */
+    attachRipples(root = document) {
+      root.addEventListener('click', (e) => {
+        const btn = e.target.closest('.pill-btn');
+        if (!btn) return;
+        const r = document.createElement('span');
+        r.className = 'ripple';
+        const rect = btn.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        r.style.width = r.style.height = size + 'px';
+        r.style.left = (e.clientX - rect.left - size / 2) + 'px';
+        r.style.top = (e.clientY - rect.top - size / 2) + 'px';
+        btn.appendChild(r);
+        r.addEventListener('animationend', () => r.remove());
+      });
+    },
+  };
+
+  PP.Utils = Utils;
+})();
+
+
+/* =====================================================================
+   Prospeceve · storage.js
+   Persistência em LocalStorage. Expõe window.PP.Storage.
+   Coleções: clients, projects, payments, files, activity, settings.
+   ===================================================================== */
+(function () {
+  'use strict';
+  window.PP = window.PP || {};
+  const { uid, today } = PP.Utils;
+
+  const KEY = 'prospeceve.db.v1';
+
+  /* Estrutura padrão + dados de exemplo (só na primeira execução). */
+  function seed() {
+    const c1 = uid('cli'), c2 = uid('cli'), c3 = uid('cli');
+    const p1 = uid('prj'), p2 = uid('prj');
+    return {
+      settings: { userName: 'Você', theme: 'light', accentTheme: 'green', company: 'Meu Ateliê Web' },
+      dashboardLayout: defaultDashboardLayout(),
+      clients: [
+        {
+          id: c1, name: 'Ana Beatriz Souza', company: 'Doceria da Ana', phone: '(21) 99999-1010',
+          whatsapp: '(21) 99999-1010', email: 'ana@doceriadaana.com', address: 'Rua das Flores, 120',
+          city: 'Rio de Janeiro', state: 'RJ', cep: '20000-000', region: 'Zona Sul',
+          instagram: '@doceriadaana', currentSite: '', leadSource: 'Instagram',
+          firstContact: '2026-05-02', lastContact: '2026-06-20', nextFollowup: '2026-07-10',
+          notes: 'Quer um site com cardápio online e botão de WhatsApp.', status: 'producao',
+          proposal: { value: 3200, discount: 200, date: '2026-05-10', accepted: true, refusedReason: '', notes: '30% de entrada' },
+          domain: { registrar: 'Registro.br', login: 'ana.souza', password: 'oculta', date: '2026-05-15', expires: '2027-05-15', ssl: true, backup: true },
+          maintenance: { plan: 'Essencial', monthly: 120, nextPayment: '2026-07-15', tickets: 0, history: '' },
+          createdAt: '2026-05-02'
+        },
+        {
+          id: c2, name: 'Carlos Mendes', company: 'CM Advocacia', phone: '(11) 98888-2020',
+          whatsapp: '(11) 98888-2020', email: 'carlos@cmadv.com.br', address: 'Av. Paulista, 900',
+          city: 'São Paulo', state: 'SP', cep: '01310-100', region: 'Centro',
+          instagram: '@cmadvocacia', currentSite: 'cmadv.com.br', leadSource: 'Indicação',
+          firstContact: '2026-04-12', lastContact: '2026-06-28', nextFollowup: '2026-07-05',
+          notes: 'Site institucional sério, com blog jurídico.', status: 'aceita',
+          proposal: { value: 5400, discount: 0, date: '2026-04-20', accepted: true, refusedReason: '', notes: '' },
+          domain: { registrar: '', login: '', password: '', date: '', expires: '', ssl: false, backup: false },
+          maintenance: { plan: '', monthly: 0, nextPayment: '', tickets: 0, history: '' },
+          createdAt: '2026-04-12'
+        },
+        {
+          id: c3, name: 'Juliana Prado', company: 'Studio JP Fotografia', phone: '(31) 97777-3030',
+          whatsapp: '(31) 97777-3030', email: 'ju@studiojp.com', address: 'Rua da Bahia, 45',
+          city: 'Belo Horizonte', state: 'MG', cep: '30160-010', region: 'Savassi',
+          instagram: '@studiojp', currentSite: '', leadSource: 'Google',
+          firstContact: '2026-06-15', lastContact: '2026-06-25', nextFollowup: '2026-07-02',
+          notes: 'Portfólio com galeria de fotos e agendamento.', status: 'proposta',
+          proposal: { value: 2800, discount: 0, date: '2026-06-18', accepted: false, refusedReason: '', notes: 'Aguardando resposta' },
+          domain: { registrar: '', login: '', password: '', date: '', expires: '', ssl: false, backup: false },
+          maintenance: { plan: '', monthly: 0, nextPayment: '', tickets: 0, history: '' },
+          createdAt: '2026-06-15'
+        },
+      ],
+      projects: [
+        {
+          id: p1, clientId: c1, name: 'Site Doceria da Ana', createdAt: '2026-05-12',
+          stages: defaultStages([{ i: 0, s: 'done' }, { i: 1, s: 'done' }, { i: 2, s: 'doing' }]),
+          checklist: defaultChecklist(['Logo', 'Fotos', 'Textos', 'Domínio']),
+        },
+        {
+          id: p2, clientId: c2, name: 'Site CM Advocacia', createdAt: '2026-04-22',
+          stages: defaultStages([{ i: 0, s: 'done' }]),
+          checklist: defaultChecklist(['Logo']),
+        },
+      ],
+      payments: [
+        { id: uid('pay'), clientId: c1, projectId: p1, total: 3000, entry: 900, received: 900, method: 'PIX', status: 'pendente', date: '2026-05-12', installments: 3, notes: 'Entrada paga' },
+        { id: uid('pay'), clientId: c2, projectId: p2, total: 5400, entry: 2700, received: 5400, method: 'Transferência', status: 'pago', date: '2026-06-30', installments: 2, notes: '' },
+      ],
+      files: [
+        { id: uid('file'), clientId: c1, name: 'logo-doceria.png', kind: 'Logo', size: '84 KB', date: '2026-05-14' },
+        { id: uid('file'), clientId: c1, name: 'fotos-produtos.zip', kind: 'Fotos', size: '3,2 MB', date: '2026-05-16' },
+      ],
+      activity: [
+        { id: uid('act'), text: 'Projeto “Site Doceria da Ana” avançou para Front-end', date: today(), ico: '🌼' },
+        { id: uid('act'), text: 'Pagamento recebido de CM Advocacia', date: today(), ico: '🪙' },
+        { id: uid('act'), text: 'Nova proposta enviada para Studio JP', date: '2026-06-18', ico: '🧵' },
+      ],
+    };
+  }
+
+  /* Etapas padrão da timeline de um projeto. */
+  function defaultStages(overrides = []) {
+    const names = ['Briefing', 'Layout', 'Front-end', 'Back-end', 'Responsividade',
+      'SEO', 'Performance', 'Testes', 'Correções', 'Aprovação', 'Publicação'];
+    const map = {}; overrides.forEach(o => map[o.i] = o.s);
+    return names.map((n, i) => ({
+      name: n, status: map[i] || 'todo', date: map[i] === 'done' ? '' : '', notes: '',
+      progress: map[i] === 'done' ? 100 : map[i] === 'doing' ? 50 : 0,
+    }));
+  }
+
+  /* Checklist padrão de publicação. */
+  function defaultChecklist(doneItems = []) {
+    const names = ['Logo', 'Fotos', 'Textos', 'Domínio', 'Hospedagem', 'DNS', 'SSL',
+      'Analytics', 'Search Console', 'SEO', 'Backup', 'WhatsApp', 'Publicação'];
+    return names.map(n => ({ name: n, done: doneItems.includes(n) }));
+  }
+
+  /* Layout padrão dos quadros (widgets) do dashboard. */
+  function defaultDashboardLayout() {
+    return [
+      { id: uid('wid'), type: 'stat:clients',    w: 3, h: 8 },
+      { id: uid('wid'), type: 'stat:projects',   w: 3, h: 8 },
+      { id: uid('wid'), type: 'stat:received',   w: 3, h: 8 },
+      { id: uid('wid'), type: 'stat:pending',    w: 3, h: 8 },
+      { id: uid('wid'), type: 'stat:published',  w: 3, h: 8 },
+      { id: uid('wid'), type: 'stat:inProgress', w: 3, h: 8 },
+      { id: uid('wid'), type: 'stat:proposals',  w: 3, h: 8 },
+      { id: uid('wid'), type: 'stat:monthProfit',w: 3, h: 8 },
+      { id: uid('wid'), type: 'chart:revenue',        w: 6, h: 16 },
+      { id: uid('wid'), type: 'quick:actions',        w: 6, h: 15 },
+      { id: uid('wid'), type: 'list:projectProgress', w: 6, h: 16 },
+      { id: uid('wid'), type: 'list:recentProjects',  w: 6, h: 15 },
+      { id: uid('wid'), type: 'list:recentActivity',  w: 6, h: 15 },
+    ];
+  }
+
+  /* ---- Núcleo de leitura/escrita ---- */
+  let db = null;
+
+  function load() {
+    if (db) return db;
+    try {
+      const raw = localStorage.getItem(KEY);
+      db = raw ? JSON.parse(raw) : seed();
+    } catch (e) {
+      console.warn('Falha ao ler dados, recriando.', e);
+      db = seed();
+    }
+    return db;
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(db)); }
+    catch (e) { PP.Utils.toast('Não foi possível salvar (armazenamento cheio?)', 'error'); }
+  }
+
+  /* Registra uma atividade recente. */
+  function log(text, ico = '✨') {
+    load();
+    db.activity.unshift({ id: uid('act'), text, date: today(), ico });
+    db.activity = db.activity.slice(0, 40);
+    save();
+  }
+
+  /* Fábrica de CRUD genérico para uma coleção. */
+  function collection(name, prefix) {
+    return {
+      all() { return load()[name].slice(); },
+      get(id) { return load()[name].find(x => x.id === id) || null; },
+      add(obj) {
+        load();
+        const item = Object.assign({ id: uid(prefix), createdAt: today() }, obj);
+        db[name].push(item); save(); return item;
+      },
+      update(id, patch) {
+        load();
+        const i = db[name].findIndex(x => x.id === id);
+        if (i < 0) return null;
+        db[name][i] = Object.assign({}, db[name][i], patch);
+        save(); return db[name][i];
+      },
+      remove(id) {
+        load();
+        db[name] = db[name].filter(x => x.id !== id);
+        save();
+      },
+    };
+  }
+
+  const Storage = {
+    load, save, log, defaultStages, defaultChecklist, defaultDashboardLayout,
+
+    clients:  collection('clients', 'cli'),
+    projects: collection('projects', 'prj'),
+    payments: collection('payments', 'pay'),
+    files:    collection('files', 'file'),
+
+    activity() { return load().activity.slice(); },
+
+    settings() { return load().settings; },
+    saveSettings(patch) { load(); db.settings = Object.assign({}, db.settings, patch); save(); },
+
+    /** Layout de quadros (widgets) do dashboard. */
+    dashboardLayout() {
+      load();
+      if (!Array.isArray(db.dashboardLayout)) db.dashboardLayout = defaultDashboardLayout();
+      return db.dashboardLayout.slice();
+    },
+    saveDashboardLayout(layout) { load(); db.dashboardLayout = layout; save(); },
+
+    /** Exporta todo o banco como string JSON (para backup). */
+    export() { return JSON.stringify(load(), null, 2); },
+
+    /** Importa um JSON de backup. Retorna true/false. */
+    import(json) {
+      try {
+        const data = JSON.parse(json);
+        if (!data.clients || !data.settings) throw new Error('formato inválido');
+        db = data; save(); return true;
+      } catch (e) { return false; }
+    },
+
+    /** Zera tudo e recria os dados de exemplo. */
+    reset() { db = seed(); save(); },
+
+    /** Apaga tudo, deixando o sistema vazio. */
+    wipe() {
+      db = { settings: { userName: 'Você', theme: 'light', company: '' },
+             dashboardLayout: defaultDashboardLayout(),
+             clients: [], projects: [], payments: [], files: [], activity: [] };
+      save();
+    },
+  };
+
+  PP.Storage = Storage;
+})();
+
+
+/* =====================================================================
+   Prospeceve · auth.js
+   Proteção simples por usuário/senha (client-side). Expõe window.PP.Auth.
+
+   ⚠️ Aviso importante: como este é um app 100% estático rodando no seu
+   próprio navegador (sem servidor), esta senha fica gravada no próprio
+   código-fonte do arquivo HTML. Ela impede que alguém abra o app "sem
+   querer" ou por cima do seu ombro, mas NÃO é uma segurança de verdade —
+   qualquer pessoa com acesso ao arquivo pode ler o código e descobrir a
+   senha. Não é indicado para proteger dados realmente sensíveis.
+   ===================================================================== */
+(function () {
+  'use strict';
+  window.PP = window.PP || {};
+
+  const CREDENTIALS = { username: 'evedev', password: 'prospeccao0' };
+  const SESSION_KEY = 'prospeceve.session';
+
+  function isLoggedIn() {
+    return sessionStorage.getItem(SESSION_KEY) === 'ok' ||
+           localStorage.getItem(SESSION_KEY) === 'ok';
+  }
+
+  function logout() {
+    sessionStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(SESSION_KEY);
+    location.reload();
+  }
+
+  /** Mostra a tela de login e chama onSuccess() quando autenticar. */
+  function showLogin(onSuccess) {
+    const screen = document.getElementById('login-screen');
+    const form = document.getElementById('login-form');
+    const errorBox = document.getElementById('login-error');
+    if (!screen || !form) { onSuccess(); return; }
+
+    screen.hidden = false;
+    document.getElementById('login-user').focus();
+
+    form.addEventListener('submit', function handler(e) {
+      e.preventDefault();
+      const user = form.username.value.trim();
+      const pass = form.password.value;
+      const remember = document.getElementById('login-remember').checked;
+
+      if (user === CREDENTIALS.username && pass === CREDENTIALS.password) {
+        (remember ? localStorage : sessionStorage).setItem(SESSION_KEY, 'ok');
+        form.removeEventListener('submit', handler);
+        screen.classList.add('is-hidden');
+        setTimeout(() => { screen.hidden = true; screen.remove(); }, 550);
+        onSuccess();
+      } else {
+        errorBox.hidden = false;
+        form.password.value = '';
+        form.password.focus();
+        const card = form; // sacode a caixa pra dar feedback visual
+        card.style.animation = 'none';
+        void card.offsetWidth;
+        card.style.animation = 'shake .4s ease';
+      }
+    });
+  }
+
+  PP.Auth = { isLoggedIn, logout, showLogin };
+})();
+
+
+/* =====================================================================
+   Prospeceve · notifications.js
+   Calcula alertas a partir dos dados e renderiza o painel de sino.
+   Expõe window.PP.Notifications.
+   ===================================================================== */
+(function () {
+  'use strict';
+  window.PP = window.PP || {};
+  const { daysUntil, dateBR, esc } = PP.Utils;
+
+  /** Gera a lista de notificações a partir do estado atual. */
+  function compute() {
+    const S = PP.Storage;
+    const alerts = [];
+
+    // Pagamentos atrasados ou pendentes com data próxima
+    S.payments.all().forEach(p => {
+      const client = S.clients.get(p.clientId);
+      const nome = client ? client.name : 'Cliente';
+      if (p.status === 'atrasado') {
+        alerts.push({ ico: '⏰', level: 'error', title: 'Pagamento atrasado',
+          text: `${nome} · ${PP.Utils.money((p.total || 0) - (p.received || 0))} em aberto` });
+      } else if (p.status === 'pendente') {
+        const restante = (p.total || 0) - (p.received || 0);
+        if (restante > 0) alerts.push({ ico: '🪙', level: 'warn', title: 'Pagamento pendente',
+          text: `${nome} · ${PP.Utils.money(restante)} a receber` });
+      }
+    });
+
+    // Follow-ups e renovações a partir dos clientes
+    S.clients.all().forEach(c => {
+      const d = daysUntil(c.nextFollowup);
+      if (d !== null && d >= 0 && d <= 5) {
+        alerts.push({ ico: '🌸', level: 'info', title: 'Follow-up próximo',
+          text: `${c.name} · ${d === 0 ? 'hoje' : 'em ' + d + ' dia(s)'} (${dateBR(c.nextFollowup)})` });
+      }
+      // Domínio vencendo
+      const dv = daysUntil(c.domain?.expires);
+      if (dv !== null && dv >= 0 && dv <= 30) {
+        alerts.push({ ico: '🌐', level: 'warn', title: 'Domínio vencendo',
+          text: `${c.company || c.name} · vence em ${dv} dia(s)` });
+      }
+      // Manutenção
+      const dm = daysUntil(c.maintenance?.nextPayment);
+      if (dm !== null && dm >= 0 && dm <= 5 && c.maintenance?.monthly) {
+        alerts.push({ ico: '🔧', level: 'info', title: 'Mensalidade de manutenção',
+          text: `${c.name} · ${PP.Utils.money(c.maintenance.monthly)} em ${dm} dia(s)` });
+      }
+    });
+
+    // Entregas próximas (etapa de Publicação de projetos em andamento)
+    S.projects.all().forEach(pr => {
+      const pending = pr.stages.filter(s => s.status !== 'done').length;
+      if (pending > 0 && pending <= 2) {
+        const client = S.clients.get(pr.clientId);
+        alerts.push({ ico: '📦', level: 'info', title: 'Entrega próxima',
+          text: `${pr.name}${client ? ' · ' + client.name : ''} · ${pending} etapa(s) restante(s)` });
+      }
+    });
+
+    return alerts;
+  }
+
+  /** Atualiza o badge do sino. */
+  function refreshBadge() {
+    const badge = document.getElementById('notif-badge');
+    if (!badge) return;
+    const n = compute().length;
+    badge.textContent = n;
+    badge.hidden = n === 0;
+  }
+
+  /** Monta o HTML do painel. */
+  function renderPanel() {
+    const panel = document.getElementById('notif-panel');
+    if (!panel) return;
+    const list = compute();
+    if (!list.length) {
+      panel.innerHTML = `<h4>🔔 Notificações</h4><div class="notif-empty">Tudo em dia por aqui! 🌷</div>`;
+      return;
+    }
+    panel.innerHTML = `<h4>🔔 Notificações (${list.length})</h4>` + list.map(a => `
+      <div class="notif-item">
+        <span class="notif-item__ico">${a.ico}</span>
+        <div class="notif-item__txt"><b>${esc(a.title)}</b><small>${esc(a.text)}</small></div>
+      </div>`).join('');
+  }
+
+  PP.Notifications = { compute, refreshBadge, renderPanel };
+})();
+
+
+/* =====================================================================
+   Prospeceve · dashboard.js
+   Painel inicial com quadros (widgets) que podem ser arrastados,
+   redimensionados, adicionados e removidos pelo usuário.
+   Expõe window.PP.Dashboard.render(container) e .projectProgress(pr).
+   ===================================================================== */
+(function () {
+  'use strict';
+  window.PP = window.PP || {};
+  const U = PP.Utils;
+
+  /* Tamanho de cada "unidade" do grid (deve casar com o CSS .dash-grid) */
+  const ROW_PX = 20, GAP_PX = 16, COLS = 12;
+
+  /* ---------------------------------------------------------------
+     Cálculos de dados (reaproveitados pelos widgets)
+     --------------------------------------------------------------- */
+  function computeStats() {
+    const S = PP.Storage;
+    const clients = S.clients.all();
+    const projects = S.projects.all();
+    const payments = S.payments.all();
+
+    const received = payments.reduce((s, p) => s + (Number(p.received) || 0), 0);
+    const totalContracted = payments.reduce((s, p) => s + (Number(p.total) || 0), 0);
+    const pending = totalContracted - received;
+
+    const published = clients.filter(c => c.status === 'publicado' || c.status === 'finalizado').length;
+    const inProgress = projects.filter(p => p.stages.some(s => s.status !== 'done') &&
+      p.stages.some(s => s.status !== 'todo')).length ||
+      clients.filter(c => c.status === 'producao').length;
+    const proposals = clients.filter(c => c.status === 'proposta' || c.status === 'negociacao').length;
+
+    const ym = new Date().toISOString().slice(0, 7);
+    const monthProfit = payments
+      .filter(p => (p.date || '').slice(0, 7) === ym)
+      .reduce((s, p) => s + (Number(p.received) || 0), 0);
+
+    return {
+      clients: clients.length, projects: projects.length,
+      received, pending, published, inProgress, proposals, monthProfit,
+    };
+  }
+
+  function projectProgress(pr) {
+    if (!pr.stages.length) return 0;
+    const sum = pr.stages.reduce((s, st) => s + (Number(st.progress) || 0), 0);
+    return Math.round(sum / pr.stages.length);
+  }
+
+  function drawRevenueChart(canvas) {
+    const S = PP.Storage;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    const months = [];
+    const base = new Date();
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(base.getFullYear(), base.getMonth() - i, 1);
+      months.push({ key: d.toISOString().slice(0, 7),
+        label: d.toLocaleDateString('pt-BR', { month: 'short' }), value: 0 });
+    }
+    S.payments.all().forEach(p => {
+      const m = months.find(x => x.key === (p.date || '').slice(0, 7));
+      if (m) m.value += Number(p.received) || 0;
+    });
+
+    const max = Math.max(1, ...months.map(m => m.value));
+    const pad = 34, gap = 18;
+    const barW = (W - pad * 2 - gap * (months.length - 1)) / months.length;
+
+    ctx.strokeStyle = '#e6ded6'; ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath(); ctx.moveTo(pad, H - pad); ctx.lineTo(W - pad, H - pad); ctx.stroke();
+    ctx.setLineDash([]);
+
+    months.forEach((m, i) => {
+      const x = pad + i * (barW + gap);
+      const h = (m.value / max) * (H - pad * 2);
+      const y = H - pad - h;
+      const grad = ctx.createLinearGradient(0, y, 0, H - pad);
+      grad.addColorStop(0, '#8ed6f8'); grad.addColorStop(1, '#59bfef');
+      ctx.fillStyle = grad;
+      roundRect(ctx, x, y, barW, h, 8); ctx.fill();
+      ctx.fillStyle = '#8d7a70'; ctx.font = '600 12px Quicksand, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(m.label, x + barW / 2, H - pad + 18);
+      if (m.value > 0) {
+        ctx.fillStyle = '#5d4037'; ctx.font = '700 11px Quicksand, sans-serif';
+        ctx.fillText(shortMoney(m.value), x + barW / 2, y - 6);
+      }
+    });
+  }
+  function roundRect(ctx, x, y, w, h, r) {
+    r = Math.min(r, w / 2, h / 2 || r);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+  function shortMoney(v) {
+    if (v >= 1000) return 'R$' + (v / 1000).toFixed(1).replace('.', ',') + 'k';
+    return 'R$' + v;
+  }
+  function emptyLine(t) { return `<div class="page-head__sub" style="padding:10px 0">${t}</div>`; }
+
+  /* ---------------------------------------------------------------
+     Registro dos quadros disponíveis (cada um representa uma função)
+     --------------------------------------------------------------- */
+  function statBody(color, ico, value, label) {
+    return `<div class="stat stat--${color}" style="cursor:default">
+      <div class="stat__ico">${ico}</div>
+      <div class="stat__value">${value}</div>
+      <div class="stat__label">${label}</div>
+    </div>`;
+  }
+
+  function buildRegistry(ctx) {
+    const { s, S, projects, activity } = ctx;
+    return {
+      'stat:clients':     { label: 'Clientes',            ico: '🧵', group: 'Estatística', w: 3, h: 8, minW: 2, minH: 6,
+        html: () => statBody('green', '🧵', s.clients, 'Clientes') },
+      'stat:projects':    { label: 'Projetos',             ico: '🌼', group: 'Estatística', w: 3, h: 8, minW: 2, minH: 6,
+        html: () => statBody('blue', '🌼', s.projects, 'Projetos') },
+      'stat:received':    { label: 'Valor recebido',       ico: '🪙', group: 'Estatística', w: 3, h: 8, minW: 2, minH: 6,
+        html: () => statBody('yellow', '🪙', U.money(s.received), 'Valor recebido') },
+      'stat:pending':     { label: 'Valor pendente',       ico: '⏳', group: 'Estatística', w: 3, h: 8, minW: 2, minH: 6,
+        html: () => statBody('pink', '⏳', U.money(s.pending), 'Valor pendente') },
+      'stat:published':   { label: 'Sites publicados',     ico: '🚀', group: 'Estatística', w: 3, h: 8, minW: 2, minH: 6,
+        html: () => statBody('green', '🚀', s.published, 'Sites publicados') },
+      'stat:inProgress':  { label: 'Em andamento',         ico: '🛠️', group: 'Estatística', w: 3, h: 8, minW: 2, minH: 6,
+        html: () => statBody('orange', '🛠️', s.inProgress, 'Em andamento') },
+      'stat:proposals':   { label: 'Propostas aguardando', ico: '📨', group: 'Estatística', w: 3, h: 8, minW: 2, minH: 6,
+        html: () => statBody('lilac', '📨', s.proposals, 'Propostas aguardando') },
+      'stat:monthProfit': { label: 'Lucro do mês',         ico: '💰', group: 'Estatística', w: 3, h: 8, minW: 2, minH: 6,
+        html: () => statBody('yellow', '💰', U.money(s.monthProfit), 'Lucro do mês') },
+
+      'quick:actions': {
+        label: 'Ações rápidas', ico: '⚡', group: 'Atalho', w: 6, h: 15, minW: 4, minH: 8,
+        html: () => `<h3 class="section-title">⚡ Ações rápidas</h3>
+          <div class="quick-actions">
+            <button type="button" class="quick-action quick-action--green" data-quick="client">
+              <span class="quick-action__ico">🧵</span>
+              <span class="quick-action__label">Novo cliente</span>
+            </button>
+            <button type="button" class="quick-action quick-action--blue" data-quick="project">
+              <span class="quick-action__ico">🌼</span>
+              <span class="quick-action__label">Novo projeto</span>
+            </button>
+            <button type="button" class="quick-action quick-action--yellow" data-quick="payment">
+              <span class="quick-action__ico">🪙</span>
+              <span class="quick-action__label">Novo pagamento</span>
+            </button>
+          </div>`,
+        after: (el) => {
+          const map = {
+            client:  () => PP.Clients.openForm(),
+            project: () => PP.Projects.openForm(),
+            payment: () => PP.Financial.openForm(),
+          };
+          el.querySelectorAll('[data-quick]').forEach(btn => {
+            btn.onclick = map[btn.dataset.quick];
+          });
+        },
+      },
+
+      'chart:revenue': {
+        label: 'Gráfico de faturamento', ico: '📈', group: 'Gráfico', w: 6, h: 16, minW: 4, minH: 10,
+        html: () => `<h3 class="section-title">📈 Faturamento (6 meses)</h3>
+          <canvas class="dash-chart-canvas" width="520" height="220" style="width:100%;height:calc(100% - 34px)"></canvas>`,
+        after: (el) => {
+          const canvas = el.querySelector('.dash-chart-canvas');
+          if (!canvas) return;
+          const cssW = canvas.clientWidth || 520, cssH = canvas.clientHeight || 220;
+          canvas.width = cssW; canvas.height = cssH;
+          drawRevenueChart(canvas);
+        },
+      },
+      'list:projectProgress': {
+        label: 'Andamento dos projetos', ico: '🌼', group: 'Lista', w: 6, h: 16, minW: 4, minH: 8,
+        html: () => `<h3 class="section-title">🌼 Andamento dos projetos</h3>
+          ${projects.length ? projects.map(pr => {
+            const pct = projectProgress(pr);
+            return `<div class="progress-row">
+              <span class="progress-row__label">${U.esc(pr.name)}</span>
+              <div class="pbar" style="flex:1"><div class="pbar__fill" style="width:${pct}%"></div></div>
+              <span class="progress-row__pct">${pct}%</span>
+            </div>`;
+          }).join('') : emptyLine('Nenhum projeto ainda')}`,
+      },
+      'list:recentProjects': {
+        label: 'Projetos recentes', ico: '🧸', group: 'Lista', w: 6, h: 15, minW: 4, minH: 8,
+        html: () => `<h3 class="section-title">🧸 Projetos recentes
+            <a class="count-pill" href="#/projetos" style="text-decoration:none">ver todos →</a></h3>
+          ${projects.length ? projects.map(pr => {
+            const client = S.clients.get(pr.clientId);
+            const pct = projectProgress(pr);
+            return `<div class="progress-row" style="gap:10px">
+              <div style="flex:1">
+                <b>${U.esc(pr.name)}</b>
+                <div class="page-head__sub">${client ? U.esc(client.name) : 'Sem cliente'} · ${pct}% concluído</div>
+              </div>
+              <a class="mini-btn" href="#/projetos">Abrir</a>
+            </div>`;
+          }).join('') : emptyLine('Cadastre seu primeiro projeto')}`,
+      },
+      'list:recentActivity': {
+        label: 'Atividades recentes', ico: '✨', group: 'Lista', w: 6, h: 15, minW: 4, minH: 8,
+        html: () => `<h3 class="section-title">✨ Atividades recentes</h3>
+          ${activity.length ? activity.map(a => `
+            <div class="progress-row" style="gap:10px">
+              <span style="font-size:20px">${a.ico || '✨'}</span>
+              <div style="flex:1">
+                <div>${U.esc(a.text)}</div>
+                <div class="page-head__sub">${U.dateBR(a.date)}</div>
+              </div>
+            </div>`).join('') : emptyLine('Sem atividades ainda')}`,
+      },
+    };
+  }
+
+  /* ---------------------------------------------------------------
+     Render principal
+     --------------------------------------------------------------- */
+  function render(container) {
+    const S = PP.Storage;
+    const s = computeStats();
+    const name = S.settings().userName || 'Você';
+    const projects = S.projects.all().slice(-4).reverse();
+    const activity = S.activity().slice(0, 6);
+    const registry = buildRegistry({ s, S, projects, activity });
+    const layout = S.dashboardLayout();
+
+    container.innerHTML = `
+      <div class="page-head">
+        <div>
+          <h1 class="page-head__title">🏠 Olá, ${U.esc(name)}!</h1>
+          <div class="page-head__sub">Aqui está o resumo fofinho do seu ateliê hoje — arraste, redimensione e monte do seu jeito 🌷</div>
+        </div>
+      </div>
+    `;
+
+    const grid = document.createElement('div');
+    grid.className = 'dash-grid';
+    grid.id = 'dash-grid';
+    container.appendChild(grid);
+
+    const bodyRefs = [];
+    layout.forEach(item => {
+      const def = registry[item.type];
+      if (!def) return; // tipo desconhecido (ex.: de um backup antigo) — ignora com segurança
+      const { el, bodyEl } = buildWidgetEl(item, def);
+      grid.appendChild(el);
+      if (def.after) bodyRefs.push({ def, bodyEl });
+    });
+
+    // quadro de "adicionar" ao final
+    const addWrap = document.createElement('div');
+    addWrap.className = 'dash-widget';
+    addWrap.style.gridColumn = 'span 3';
+    addWrap.style.gridRow = 'span 8';
+    addWrap.innerHTML = `<button type="button" class="dash-add-btn" id="dash-add-btn">
+      <span class="dash-add-btn__ico">➕</span> Adicionar quadro
+    </button>`;
+    grid.appendChild(addWrap);
+
+    // desenha conteúdo pós-inserção (ex.: canvas), já que precisa estar no DOM
+    bodyRefs.forEach(({ def, bodyEl }) => def.after(bodyEl));
+
+    U.qs('#dash-add-btn', container).onclick = () => openWidgetPicker(registry, layout);
+    setupDragAndDrop(grid);
+  }
+
+  function buildWidgetEl(item, def) {
+    const el = document.createElement('div');
+    el.className = 'dash-widget';
+    el.dataset.widgetId = item.id;
+    el.dataset.type = item.type;
+    el.style.gridColumn = `span ${item.w}`;
+    el.style.gridRow = `span ${item.h}`;
+    el.setAttribute('draggable', 'true');
+
+    const isBare = item.type.startsWith('stat:'); // cartão de estatística já tem seu próprio visual
+    el.innerHTML = `
+      <div class="dash-widget__head">
+        <span class="dash-widget__drag">⠿⠿</span>
+        <button type="button" class="dash-widget__remove" title="Remover quadro" data-remove draggable="false">✕</button>
+      </div>
+      <div class="${isBare ? '' : 'cushion'} dash-widget__body" style="position:relative;${isBare ? 'height:100%' : ''}">
+        ${def.html()}
+      </div>
+      <div class="dash-widget__resize" draggable="false"></div>
+    `;
+
+    if (isBare) {
+      const drag = el.querySelector('.dash-widget__drag');
+      drag.style.display = 'none';
+      el.querySelector('.dash-widget__head').style.margin = '0 0 2px';
+      el.querySelector('.dash-widget__head').style.minHeight = '0';
+    }
+
+    el.querySelector('[data-remove]').onclick = (e) => {
+      e.stopPropagation();
+      removeWidget(item.id);
+    };
+
+    attachResize(el, item);
+    return { el, bodyEl: el.querySelector('.dash-widget__body') };
+  }
+
+  function removeWidget(id) {
+    U.confirm('Remover este quadro do dashboard? Você pode adicioná-lo de volta quando quiser.', { okText: 'Remover' })
+      .then(ok => {
+        if (!ok) return;
+        const layout = PP.Storage.dashboardLayout().filter(w => w.id !== id);
+        PP.Storage.saveDashboardLayout(layout);
+        PP.Router.reload();
+      });
+  }
+
+  /* ---------------- Escolher e adicionar um novo quadro ---------------- */
+  function openWidgetPicker(registry, currentLayout) {
+    const usedTypes = new Set(currentLayout.map(w => w.type));
+    const available = Object.entries(registry).filter(([type]) => !usedTypes.has(type));
+
+    const body = available.length
+      ? `<div class="widget-picker">
+          ${available.map(([type, def]) => `
+            <button type="button" class="widget-pick" data-type="${type}">
+              <span class="widget-pick__ico">${def.ico}</span>
+              <span>
+                <div class="widget-pick__label">${U.esc(def.label)}</div>
+                <div class="widget-pick__desc">${U.esc(def.group)}</div>
+              </span>
+            </button>`).join('')}
+        </div>`
+      : `<div class="page-head__sub" style="padding:14px 0">Todos os quadros disponíveis já estão no seu dashboard! Remova algum para trocar por outro. 🌸</div>`;
+
+    const html = `
+      <div class="modal-backdrop">
+        <div class="modal">
+          <div class="modal__head">
+            <h3 class="modal__title">➕ Adicionar quadro</h3>
+            <button type="button" class="modal__close" data-close>✕</button>
+          </div>
+          ${body}
+        </div>
+      </div>`;
+    const back = PP.Clients.mountModal(html);
+    back.querySelectorAll('[data-type]').forEach(btn => {
+      btn.onclick = () => {
+        const type = btn.dataset.type;
+        const def = registry[type];
+        const layout = PP.Storage.dashboardLayout();
+        layout.push({ id: PP.Utils.uid('wid'), type, w: def.w, h: def.h });
+        PP.Storage.saveDashboardLayout(layout);
+        back.remove();
+        PP.Router.reload();
+      };
+    });
+  }
+
+  /* ---------------- Redimensionar (arrastar canto inferior direito) ---------------- */
+  function attachResize(el, item) {
+    const handle = el.querySelector('.dash-widget__resize');
+    handle.addEventListener('pointerdown', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const grid = el.parentElement;
+      const gridRect = grid.getBoundingClientRect();
+      const colPx = (gridRect.width - GAP_PX * (COLS - 1)) / COLS;
+      const startX = e.clientX, startY = e.clientY;
+      const startW = item.w, startH = item.h;
+      el.classList.add('is-resizing');
+      handle.setPointerCapture(e.pointerId);
+
+      function onMove(ev) {
+        const dx = ev.clientX - startX, dy = ev.clientY - startY;
+        const deltaCols = Math.round(dx / (colPx + GAP_PX));
+        const deltaRows = Math.round(dy / (ROW_PX + GAP_PX));
+        const newW = Math.min(COLS, Math.max(item.minW || 2, startW + deltaCols));
+        const newH = Math.max(item.minH || 6, startH + deltaRows);
+        el.style.gridColumn = `span ${newW}`;
+        el.style.gridRow = `span ${newH}`;
+        el._pendingW = newW; el._pendingH = newH;
+      }
+      function onUp() {
+        handle.removeEventListener('pointermove', onMove);
+        handle.removeEventListener('pointerup', onUp);
+        el.classList.remove('is-resizing');
+        if (el._pendingW && el._pendingH) {
+          const layout = PP.Storage.dashboardLayout().map(w =>
+            w.id === item.id ? Object.assign({}, w, { w: el._pendingW, h: el._pendingH }) : w);
+          PP.Storage.saveDashboardLayout(layout);
+        }
+        PP.Router.reload();
+      }
+      handle.addEventListener('pointermove', onMove);
+      handle.addEventListener('pointerup', onUp);
+    });
+  }
+
+  /* ---------------- Arrastar para reordenar ---------------- */
+  function setupDragAndDrop(grid) {
+    let draggedId = null;
+
+    grid.querySelectorAll('.dash-widget[data-widget-id]').forEach(el => {
+      el.addEventListener('dragstart', (e) => {
+        draggedId = el.dataset.widgetId;
+        el.classList.add('is-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        try { e.dataTransfer.setData('text/plain', draggedId); } catch (err) {}
+      });
+      el.addEventListener('dragend', () => {
+        el.classList.remove('is-dragging');
+        grid.querySelectorAll('.is-drop-target').forEach(x => x.classList.remove('is-drop-target'));
+      });
+      el.addEventListener('dragover', (e) => {
+        if (!draggedId || el.dataset.widgetId === draggedId) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        grid.querySelectorAll('.is-drop-target').forEach(x => x.classList.remove('is-drop-target'));
+        el.classList.add('is-drop-target');
+      });
+      el.addEventListener('drop', (e) => {
+        e.preventDefault();
+        el.classList.remove('is-drop-target');
+        const targetId = el.dataset.widgetId;
+        if (!draggedId || draggedId === targetId) return;
+
+        const layout = PP.Storage.dashboardLayout();
+        const fromIdx = layout.findIndex(w => w.id === draggedId);
+        const toIdx = layout.findIndex(w => w.id === targetId);
+        if (fromIdx < 0 || toIdx < 0) return;
+        const [moved] = layout.splice(fromIdx, 1);
+        layout.splice(toIdx, 0, moved);
+        PP.Storage.saveDashboardLayout(layout);
+        draggedId = null;
+        PP.Router.reload();
+      });
+    });
+  }
+
+  PP.Dashboard = { render, projectProgress };
+})();
+
+
+/* =====================================================================
+   Prospeceve · clients.js
+   Gestão de clientes: listar, filtrar, ordenar, criar, editar, excluir,
+   ver ficha completa (dados, proposta, domínio, manutenção, arquivos).
+   Expõe window.PP.Clients.
+   ===================================================================== */
+(function () {
+  'use strict';
+  window.PP = window.PP || {};
+  const U = PP.Utils;
+
+  /* Lista de status possíveis (valor interno → rótulo + classe do badge). */
+  const STATUS = [
+    { v: 'novo',       t: 'Novo Lead' },
+    { v: 'contato',    t: 'Contato Feito' },
+    { v: 'negociacao', t: 'Negociação' },
+    { v: 'proposta',   t: 'Proposta Enviada' },
+    { v: 'aceita',     t: 'Proposta Aceita' },
+    { v: 'recusada',   t: 'Proposta Recusada' },
+    { v: 'producao',   t: 'Em Produção' },
+    { v: 'conteudo',   t: 'Aguardando Conteúdo' },
+    { v: 'aprovacao',  t: 'Em Aprovação' },
+    { v: 'publicado',  t: 'Publicado' },
+    { v: 'finalizado', t: 'Finalizado' },
+    { v: 'perdido',    t: 'Cliente Perdido' },
+  ];
+  const statusLabel = v => (STATUS.find(s => s.v === v) || { t: v }).t;
+  const statusBadge = v => `<span class="status status--${v}">${statusLabel(v)}</span>`;
+
+  /* Estado local da tela (filtros). */
+  let ui = { q: '', status: '', sort: 'name' };
+
+  function render(container) {
+    const S = PP.Storage;
+    let list = S.clients.all();
+
+    // filtro por texto
+    if (ui.q) {
+      const q = ui.q.toLowerCase();
+      list = list.filter(c => [c.name, c.company, c.phone, c.city, c.region, statusLabel(c.status)]
+        .some(f => (f || '').toLowerCase().includes(q)));
+    }
+    // filtro por status
+    if (ui.status) list = list.filter(c => c.status === ui.status);
+    // ordenação
+    list.sort((a, b) => {
+      if (ui.sort === 'name') return (a.name || '').localeCompare(b.name || '');
+      if (ui.sort === 'recent') return (b.createdAt || '').localeCompare(a.createdAt || '');
+      if (ui.sort === 'value') return (b.proposal?.value || 0) - (a.proposal?.value || 0);
+      return 0;
+    });
+
+    container.innerHTML = `
+      <div class="page-head">
+        <div>
+          <h1 class="page-head__title">🧵 Clientes</h1>
+          <div class="page-head__sub">${S.clients.all().length} cliente(s) no seu ateliê</div>
+        </div>
+        <div class="page-head__spacer"></div>
+        <button class="pill-btn" id="cli-new"><span>＋</span> Novo cliente</button>
+      </div>
+
+      <div class="toolbar">
+        <div class="field-inline">
+          <input class="input" id="cli-q" placeholder="🔍 Buscar por nome, cidade, região…" value="${U.esc(ui.q)}" style="min-width:260px">
+        </div>
+        <div class="field-inline">
+          <select class="select" id="cli-status">
+            <option value="">Todos os status</option>
+            ${STATUS.map(s => `<option value="${s.v}" ${ui.status === s.v ? 'selected' : ''}>${s.t}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field-inline">
+          <select class="select" id="cli-sort">
+            <option value="name"   ${ui.sort === 'name' ? 'selected' : ''}>Ordenar: Nome</option>
+            <option value="recent" ${ui.sort === 'recent' ? 'selected' : ''}>Ordenar: Recentes</option>
+            <option value="value"  ${ui.sort === 'value' ? 'selected' : ''}>Ordenar: Valor</option>
+          </select>
+        </div>
+      </div>
+
+      ${list.length ? `<div class="grid grid--cards stagger" id="cli-grid">
+        ${list.map(cardHTML).join('')}
+      </div>` : emptyState()}
+    `;
+
+    // eventos
+    U.qs('#cli-new', container).onclick = () => openForm();
+    const qInput = U.qs('#cli-q', container);
+    qInput.oninput = U.debounce(e => { ui.q = e.target.value; render(container); posCursor(container); }, 200);
+    U.qs('#cli-status', container).onchange = e => { ui.status = e.target.value; render(container); };
+    U.qs('#cli-sort', container).onchange = e => { ui.sort = e.target.value; render(container); };
+
+    container.querySelectorAll('[data-open]').forEach(el =>
+      el.onclick = () => openDetail(el.dataset.open));
+    container.querySelectorAll('[data-edit]').forEach(el =>
+      el.onclick = (e) => { e.stopPropagation(); openForm(el.dataset.edit); });
+    container.querySelectorAll('[data-del]').forEach(el =>
+      el.onclick = (e) => { e.stopPropagation(); removeClient(el.dataset.del, container); });
+  }
+
+  // mantém cursor no fim ao redigitar após re-render da busca
+  function posCursor(container) {
+    const el = U.qs('#cli-q', container);
+    if (el) { el.focus(); const v = el.value; el.value = ''; el.value = v; }
+  }
+
+  function cardHTML(c) {
+    const val = c.proposal?.value ? U.money(c.proposal.value) : '—';
+    return `<article class="entity-card" data-open="${c.id}" tabindex="0">
+      <div class="entity-card__top">
+        <div class="entity-card__avatar">${U.initials(c.name)}</div>
+        <div style="min-width:0">
+          <div class="entity-card__name">${U.esc(c.name)}</div>
+          <div class="entity-card__meta">${U.esc(c.company || 'Sem empresa')}</div>
+        </div>
+      </div>
+      <div class="entity-card__row">📍 ${U.esc(c.city || '—')}${c.region ? ' · ' + U.esc(c.region) : ''}</div>
+      <div class="entity-card__row">📞 ${U.esc(c.phone || '—')}</div>
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+        ${statusBadge(c.status)}
+        <span class="chip">💵 ${val}</span>
+      </div>
+      <div class="entity-card__foot">
+        <button class="mini-btn" data-edit="${c.id}">✏️ Editar</button>
+        <button class="mini-btn mini-btn--danger" data-del="${c.id}">🗑️ Excluir</button>
+      </div>
+    </article>`;
+  }
+
+  function emptyState() {
+    return `<div class="cushion cushion--flat empty">
+      <span class="empty__emoji">🧵</span>
+      <div class="empty__title">Nenhum cliente por aqui ainda</div>
+      <p>Que tal costurar o primeiro? Clique em “Novo cliente”.</p>
+      <div style="margin-top:14px"><button class="pill-btn" onclick="PP.Clients.openForm()"><span>＋</span> Novo cliente</button></div>
+    </div>`;
+  }
+
+  /* ---------------- Formulário (criar / editar) ---------------- */
+  function openForm(id) {
+    const S = PP.Storage;
+    const c = id ? S.clients.get(id) : null;
+    const p = c?.proposal || {};
+    const d = c?.domain || {};
+    const m = c?.maintenance || {};
+
+    const html = `
+      <div class="modal-backdrop">
+        <form class="modal modal--wide" id="cli-form" novalidate>
+          <div class="modal__head">
+            <h3 class="modal__title">${c ? '✏️ Editar cliente' : '🧵 Novo cliente'}</h3>
+            <button type="button" class="modal__close" data-close aria-label="Fechar">✕</button>
+          </div>
+
+          <div class="form-grid">
+            ${input('name', 'Nome *', c?.name, 'text', true)}
+            ${input('company', 'Empresa', c?.company)}
+            ${input('phone', 'Telefone', c?.phone)}
+            ${input('whatsapp', 'WhatsApp', c?.whatsapp)}
+            ${input('email', 'E-mail', c?.email, 'email')}
+            ${input('instagram', 'Instagram', c?.instagram)}
+            ${input('address', 'Endereço', c?.address)}
+            ${input('city', 'Cidade', c?.city)}
+            ${input('state', 'Estado', c?.state)}
+            ${input('cep', 'CEP', c?.cep)}
+            ${input('region', 'Região', c?.region)}
+            ${input('currentSite', 'Site atual', c?.currentSite)}
+            ${input('leadSource', 'Origem do lead', c?.leadSource)}
+
+            <div class="form-field">
+              <label for="f-status">Status</label>
+              <select class="select" id="f-status" name="status">
+                ${STATUS.map(s => `<option value="${s.v}" ${(c?.status || 'novo') === s.v ? 'selected' : ''}>${s.t}</option>`).join('')}
+              </select>
+            </div>
+
+            ${input('firstContact', 'Primeiro contato', c?.firstContact, 'date')}
+            ${input('lastContact', 'Último contato', c?.lastContact, 'date')}
+            ${input('nextFollowup', 'Próximo follow-up', c?.nextFollowup, 'date')}
+
+            <div class="form-field form-field--full">
+              <label for="f-notes">Observações</label>
+              <textarea class="textarea" id="f-notes" name="notes">${U.esc(c?.notes || '')}</textarea>
+            </div>
+
+            <div class="form-subtitle">📨 Proposta</div>
+            ${input('p_value', 'Valor (R$)', p.value, 'number')}
+            ${input('p_discount', 'Desconto (R$)', p.discount, 'number')}
+            ${input('p_date', 'Data da proposta', p.date, 'date')}
+            <div class="form-field">
+              <label for="p-accepted">Situação da proposta</label>
+              <select class="select" id="p-accepted" name="p_accepted">
+                <option value="" ${p.accepted == null ? 'selected' : ''}>Aguardando</option>
+                <option value="yes" ${p.accepted === true ? 'selected' : ''}>Aceita</option>
+                <option value="no"  ${p.accepted === false ? 'selected' : ''}>Recusada</option>
+              </select>
+            </div>
+            ${input('p_reason', 'Motivo (se recusada)', p.refusedReason)}
+            <div class="form-field form-field--full">
+              <label for="p-notes">Observações da proposta</label>
+              <textarea class="textarea" id="p-notes" name="p_notes">${U.esc(p.notes || '')}</textarea>
+            </div>
+
+            <div class="form-subtitle">🌐 Domínio</div>
+            ${input('d_registrar', 'Empresa (registrador)', d.registrar)}
+            ${input('d_login', 'Login', d.login)}
+            ${input('d_password', 'Senha', d.password, 'password')}
+            ${input('d_date', 'Data de registro', d.date, 'date')}
+            ${input('d_expires', 'Vencimento', d.expires, 'date')}
+            <div class="form-field">
+              <label>SSL / Backup</label>
+              <div style="display:flex; gap:16px; align-items:center; padding-top:8px">
+                <label class="chip"><input type="checkbox" name="d_ssl" ${d.ssl ? 'checked' : ''}> SSL</label>
+                <label class="chip"><input type="checkbox" name="d_backup" ${d.backup ? 'checked' : ''}> Backup</label>
+              </div>
+            </div>
+
+            <div class="form-subtitle">🔧 Manutenção</div>
+            ${input('m_plan', 'Plano', m.plan)}
+            ${input('m_monthly', 'Mensalidade (R$)', m.monthly, 'number')}
+            ${input('m_next', 'Próximo pagamento', m.nextPayment, 'date')}
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="pill-btn pill-btn--ghost" data-close>Cancelar</button>
+            <button type="submit" class="pill-btn pill-btn--green">💾 Salvar cliente</button>
+          </div>
+        </form>
+      </div>`;
+
+    const back = mountModal(html);
+    const form = back.querySelector('#cli-form');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const f = new FormData(form);
+      const name = (f.get('name') || '').toString().trim();
+      if (!name) { U.toast('Informe o nome do cliente', 'warn'); form.querySelector('#f-name')?.focus(); return; }
+
+      const acceptedRaw = f.get('p_accepted');
+      const accepted = acceptedRaw === 'yes' ? true : acceptedRaw === 'no' ? false : null;
+
+      const data = {
+        name, company: f.get('company'), phone: f.get('phone'), whatsapp: f.get('whatsapp'),
+        email: f.get('email'), instagram: f.get('instagram'), address: f.get('address'),
+        city: f.get('city'), state: f.get('state'), cep: f.get('cep'), region: f.get('region'),
+        currentSite: f.get('currentSite'), leadSource: f.get('leadSource'), status: f.get('status'),
+        firstContact: f.get('firstContact'), lastContact: f.get('lastContact'),
+        nextFollowup: f.get('nextFollowup'), notes: f.get('notes'),
+        proposal: {
+          value: Number(f.get('p_value')) || 0, discount: Number(f.get('p_discount')) || 0,
+          date: f.get('p_date'), accepted, refusedReason: f.get('p_reason'), notes: f.get('p_notes'),
+        },
+        domain: {
+          registrar: f.get('d_registrar'), login: f.get('d_login'), password: f.get('d_password'),
+          date: f.get('d_date'), expires: f.get('d_expires'),
+          ssl: f.get('d_ssl') === 'on', backup: f.get('d_backup') === 'on',
+        },
+        maintenance: {
+          plan: f.get('m_plan'), monthly: Number(f.get('m_monthly')) || 0,
+          nextPayment: f.get('m_next'), tickets: c?.maintenance?.tickets || 0,
+          history: c?.maintenance?.history || '',
+        },
+      };
+
+      if (c) {
+        PP.Storage.clients.update(c.id, data);
+        PP.Storage.log(`Cliente “${name}” atualizado`, '✏️');
+        U.toast('Cliente atualizado!', 'ok');
+      } else {
+        PP.Storage.clients.add(data);
+        PP.Storage.log(`Novo cliente: “${name}”`, '🧵');
+        U.toast('Cliente cadastrado!', 'ok', '🌷');
+      }
+      back.remove();
+      PP.Notifications.refreshBadge();
+      PP.Router.reload();
+    });
+  }
+
+  /* ---------------- Ficha detalhada ---------------- */
+  function openDetail(id) {
+    const S = PP.Storage;
+    const c = S.clients.get(id);
+    if (!c) return;
+    const p = c.proposal || {}, d = c.domain || {}, m = c.maintenance || {};
+    const projects = S.projects.all().filter(x => x.clientId === id);
+    const payments = S.payments.all().filter(x => x.clientId === id);
+    const files = S.files.all().filter(x => x.clientId === id);
+
+    const html = `
+      <div class="modal-backdrop">
+        <div class="modal modal--wide">
+          <div class="modal__head">
+            <div class="entity-card__avatar" style="width:52px;height:52px">${U.initials(c.name)}</div>
+            <div>
+              <h3 class="modal__title">${U.esc(c.name)}</h3>
+              <div class="page-head__sub">${U.esc(c.company || '')} ${statusBadge(c.status)}</div>
+            </div>
+            <button class="modal__close" data-close>✕</button>
+          </div>
+
+          <div class="tabs" id="det-tabs">
+            <button class="tab is-active" data-tab="dados">📇 Dados</button>
+            <button class="tab" data-tab="proposta">📨 Proposta</button>
+            <button class="tab" data-tab="dominio">🌐 Domínio</button>
+            <button class="tab" data-tab="manut">🔧 Manutenção</button>
+            <button class="tab" data-tab="rel">🧩 Relacionados</button>
+          </div>
+
+          <div data-panel="dados">
+            <div class="info-list">
+              ${row('Empresa', c.company)}
+              ${row('Telefone', c.phone)}
+              ${row('WhatsApp', c.whatsapp)}
+              ${row('E-mail', c.email)}
+              ${row('Instagram', c.instagram)}
+              ${row('Endereço', c.address)}
+              ${row('Cidade/UF', [c.city, c.state].filter(Boolean).join(' / '))}
+              ${row('CEP', c.cep)} ${row('Região', c.region)}
+              ${row('Site atual', c.currentSite)}
+              ${row('Origem do lead', c.leadSource)}
+              ${row('Primeiro contato', U.dateBR(c.firstContact))}
+              ${row('Último contato', U.dateBR(c.lastContact))}
+              ${row('Próximo follow-up', U.dateBR(c.nextFollowup))}
+              ${row('Observações', c.notes)}
+            </div>
+          </div>
+
+          <div data-panel="proposta" hidden>
+            <div class="info-list">
+              ${row('Valor', p.value ? U.money(p.value) : '—')}
+              ${row('Desconto', p.discount ? U.money(p.discount) : '—')}
+              ${row('Total', p.value ? U.money((p.value || 0) - (p.discount || 0)) : '—')}
+              ${row('Data', U.dateBR(p.date))}
+              ${row('Situação', p.accepted === true ? '✅ Aceita' : p.accepted === false ? '❌ Recusada' : '⏳ Aguardando')}
+              ${row('Motivo', p.refusedReason)}
+              ${row('Observações', p.notes)}
+            </div>
+          </div>
+
+          <div data-panel="dominio" hidden>
+            <div class="info-list">
+              ${row('Registrador', d.registrar)}
+              ${row('Login', d.login)}
+              ${row('Senha', d.password ? '••••••••' : '—')}
+              ${row('Registro', U.dateBR(d.date))}
+              ${row('Vencimento', U.dateBR(d.expires))}
+              ${row('SSL', d.ssl ? '✅ Sim' : '—')}
+              ${row('Backup', d.backup ? '✅ Sim' : '—')}
+            </div>
+          </div>
+
+          <div data-panel="manut" hidden>
+            <div class="info-list">
+              ${row('Plano', m.plan)}
+              ${row('Mensalidade', m.monthly ? U.money(m.monthly) : '—')}
+              ${row('Próximo pagamento', U.dateBR(m.nextPayment))}
+              ${row('Chamados', m.tickets ?? 0)}
+              ${row('Histórico', m.history)}
+            </div>
+          </div>
+
+          <div data-panel="rel" hidden>
+            <h4 style="margin:6px 0 10px">🌼 Projetos (${projects.length})</h4>
+            ${projects.length ? projects.map(pr => `<div class="chip" style="margin:0 6px 6px 0">${U.esc(pr.name)} · ${PP.Dashboard.projectProgress(pr)}%</div>`).join('') : '<div class="page-head__sub">Nenhum projeto</div>'}
+            <h4 style="margin:16px 0 10px">🪙 Pagamentos (${payments.length})</h4>
+            ${payments.length ? payments.map(pg => `<div class="chip" style="margin:0 6px 6px 0">${U.money(pg.total)} · <span class="status status--${pg.status}">${pg.status}</span></div>`).join('') : '<div class="page-head__sub">Nenhum pagamento</div>'}
+            <h4 style="margin:16px 0 10px">☁️ Arquivos (${files.length})</h4>
+            ${files.length ? files.map(fl => `<div class="chip" style="margin:0 6px 6px 0">📄 ${U.esc(fl.name)}</div>`).join('') : '<div class="page-head__sub">Nenhum arquivo</div>'}
+          </div>
+
+          <div class="form-actions">
+            <button class="pill-btn pill-btn--danger" data-del="${c.id}">🗑️ Excluir</button>
+            <button class="pill-btn pill-btn--ghost" data-close>Fechar</button>
+            <button class="pill-btn pill-btn--green" data-edit="${c.id}">✏️ Editar</button>
+          </div>
+        </div>
+      </div>`;
+
+    const back = mountModal(html);
+    // troca de abas
+    back.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+      back.querySelectorAll('.tab').forEach(x => x.classList.remove('is-active'));
+      t.classList.add('is-active');
+      back.querySelectorAll('[data-panel]').forEach(p => p.hidden = p.dataset.panel !== t.dataset.tab);
+    });
+    back.querySelector('[data-edit]').onclick = () => { back.remove(); openForm(c.id); };
+    back.querySelector('[data-del]').onclick = async () => {
+      back.remove(); removeClient(c.id);
+    };
+  }
+
+  function removeClient(id, container) {
+    const c = PP.Storage.clients.get(id);
+    PP.Utils.confirm(`Excluir o cliente “${c?.name}”? Projetos e pagamentos ligados a ele continuarão existindo.`, { danger: true, okText: 'Excluir' })
+      .then(ok => {
+        if (!ok) return;
+        PP.Storage.clients.remove(id);
+        PP.Storage.log(`Cliente “${c?.name}” excluído`, '🗑️');
+        U.toast('Cliente excluído', 'info');
+        PP.Notifications.refreshBadge();
+        PP.Router.reload();
+      });
+  }
+
+  /* ---------- helpers de UI ---------- */
+  function input(name, label, value, type = 'text', required = false) {
+    const v = value == null ? '' : value;
+    return `<div class="form-field">
+      <label for="f-${name}">${label}</label>
+      <input class="input" id="f-${name}" name="${name}" type="${type}"
+        value="${U.esc(v)}" ${required ? 'required' : ''} />
+    </div>`;
+  }
+  function row(label, value) {
+    return `<div class="info-list__row"><b>${label}</b><span>${U.esc(value || '—')}</span></div>`;
+  }
+  function mountModal(html) {
+    const root = document.getElementById('modal-root');
+    const back = U.fromHTML(html);
+    root.appendChild(back);
+    back.addEventListener('click', (e) => {
+      if (e.target === back || e.target.closest('[data-close]')) back.remove();
+    });
+    document.addEventListener('keydown', function esc(ev) {
+      if (ev.key === 'Escape') { back.remove(); document.removeEventListener('keydown', esc); }
+    });
+    return back;
+  }
+
+  PP.Clients = { render, openForm, openDetail, STATUS, statusLabel, statusBadge, mountModal };
+})();
+
+
+/* =====================================================================
+   Prospeceve · projects.js
+   Projetos: lista, criação/edição, timeline de etapas, checklist.
+   Expõe window.PP.Projects.
+   ===================================================================== */
+(function () {
+  'use strict';
+  window.PP = window.PP || {};
+  const U = PP.Utils;
+  const STAGE_STATUS = { todo: 'A fazer', doing: 'Em andamento', done: 'Concluído' };
+
+  function render(container) {
+    const S = PP.Storage;
+    const projects = S.projects.all();
+
+    container.innerHTML = `
+      <div class="page-head">
+        <div>
+          <h1 class="page-head__title">🌼 Projetos</h1>
+          <div class="page-head__sub">${projects.length} projeto(s) em produção</div>
+        </div>
+        <div class="page-head__spacer"></div>
+        <button class="pill-btn" id="prj-new"><span>＋</span> Novo projeto</button>
+      </div>
+
+      ${projects.length ? `<div class="grid grid--cards stagger">
+        ${projects.map(cardHTML).join('')}
+      </div>` : `<div class="cushion cushion--flat empty">
+        <span class="empty__emoji">🌼</span>
+        <div class="empty__title">Nenhum projeto ainda</div>
+        <p>Crie um projeto e acompanhe cada etapa com carinho.</p>
+        <div style="margin-top:14px"><button class="pill-btn" onclick="PP.Projects.openForm()"><span>＋</span> Novo projeto</button></div>
+      </div>`}
+    `;
+
+    U.qs('#prj-new', container).onclick = () => openForm();
+    container.querySelectorAll('[data-open]').forEach(el => el.onclick = () => openDetail(el.dataset.open));
+    container.querySelectorAll('[data-edit]').forEach(el => el.onclick = e => { e.stopPropagation(); openForm(el.dataset.edit); });
+    container.querySelectorAll('[data-del]').forEach(el => el.onclick = e => { e.stopPropagation(); removeProject(el.dataset.del); });
+  }
+
+  function progress(pr) { return PP.Dashboard.projectProgress(pr); }
+
+  function cardHTML(pr) {
+    const client = PP.Storage.clients.get(pr.clientId);
+    const pct = progress(pr);
+    const doneStages = pr.stages.filter(s => s.status === 'done').length;
+    const checkDone = pr.checklist.filter(c => c.done).length;
+    return `<article class="entity-card" data-open="${pr.id}" tabindex="0">
+      <div class="entity-card__top">
+        <div class="entity-card__avatar" style="background:linear-gradient(180deg,#ffe27a,#f4c430);color:#6a4b00">🌼</div>
+        <div style="min-width:0">
+          <div class="entity-card__name">${U.esc(pr.name)}</div>
+          <div class="entity-card__meta">${client ? U.esc(client.name) : 'Sem cliente'}</div>
+        </div>
+      </div>
+      <div class="entity-card__row">🧩 ${doneStages}/${pr.stages.length} etapas · ✅ ${checkDone}/${pr.checklist.length} checklist</div>
+      <div class="entity-card__foot" style="flex-direction:column; align-items:stretch; gap:8px">
+        <div style="display:flex; align-items:center; gap:8px">
+          <div class="pbar" style="flex:1"><div class="pbar__fill" style="width:${pct}%"></div></div>
+          <b>${pct}%</b>
+        </div>
+        <div style="display:flex; gap:8px">
+          <button class="mini-btn" data-edit="${pr.id}">✏️ Editar</button>
+          <button class="mini-btn mini-btn--danger" data-del="${pr.id}">🗑️ Excluir</button>
+        </div>
+      </div>
+    </article>`;
+  }
+
+  /* ---------------- Criar / editar (dados básicos) ---------------- */
+  function openForm(id) {
+    const S = PP.Storage;
+    const pr = id ? S.projects.get(id) : null;
+    const clients = S.clients.all();
+
+    const html = `
+      <div class="modal-backdrop">
+        <form class="modal" id="prj-form">
+          <div class="modal__head">
+            <h3 class="modal__title">${pr ? '✏️ Editar projeto' : '🌼 Novo projeto'}</h3>
+            <button type="button" class="modal__close" data-close>✕</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-field form-field--full">
+              <label for="pr-name">Nome do projeto *</label>
+              <input class="input" id="pr-name" name="name" value="${U.esc(pr?.name || '')}" required>
+            </div>
+            <div class="form-field form-field--full">
+              <label for="pr-client">Cliente</label>
+              <select class="select" id="pr-client" name="clientId">
+                <option value="">— Sem cliente —</option>
+                ${clients.map(c => `<option value="${c.id}" ${pr?.clientId === c.id ? 'selected' : ''}>${U.esc(c.name)}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="pill-btn pill-btn--ghost" data-close>Cancelar</button>
+            <button type="submit" class="pill-btn pill-btn--green">💾 Salvar</button>
+          </div>
+        </form>
+      </div>`;
+
+    const back = PP.Clients.mountModal(html);
+    back.querySelector('#prj-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      const name = (f.get('name') || '').toString().trim();
+      if (!name) { U.toast('Dê um nome ao projeto', 'warn'); return; }
+      const clientId = f.get('clientId') || null;
+
+      if (pr) {
+        S.projects.update(pr.id, { name, clientId });
+        U.toast('Projeto atualizado!', 'ok');
+      } else {
+        S.projects.add({ name, clientId, stages: S.defaultStages(), checklist: S.defaultChecklist() });
+        S.log(`Novo projeto: “${name}”`, '🌼');
+        U.toast('Projeto criado!', 'ok', '🌼');
+      }
+      back.remove();
+      PP.Router.reload();
+    });
+  }
+
+  /* ---------------- Detalhe: timeline + checklist ---------------- */
+  function openDetail(id) {
+    const S = PP.Storage;
+    const pr = S.projects.get(id);
+    if (!pr) return;
+    const client = S.clients.get(pr.clientId);
+
+    const html = `
+      <div class="modal-backdrop">
+        <div class="modal modal--wide">
+          <div class="modal__head">
+            <div class="entity-card__avatar" style="width:52px;height:52px;background:linear-gradient(180deg,#ffe27a,#f4c430);color:#6a4b00">🌼</div>
+            <div>
+              <h3 class="modal__title">${U.esc(pr.name)}</h3>
+              <div class="page-head__sub">${client ? U.esc(client.name) : 'Sem cliente'} · <b id="pr-pct">${progress(pr)}%</b> concluído</div>
+            </div>
+            <button class="modal__close" data-close>✕</button>
+          </div>
+
+          <div class="pbar pbar--yellow" style="margin-bottom:18px"><div class="pbar__fill" id="pr-bar" style="width:${progress(pr)}%"></div></div>
+
+          <h4 class="section-title">🧩 Etapas do projeto</h4>
+          <div class="timeline" id="tl">
+            ${pr.stages.map((s, i) => stageHTML(s, i)).join('')}
+          </div>
+
+          <h4 class="section-title" style="margin-top:20px">✅ Checklist de publicação</h4>
+          <div class="check-grid" id="cl">
+            ${pr.checklist.map((c, i) => `
+              <div class="check-item ${c.done ? 'is-done' : ''}" data-check="${i}">
+                <span class="check-box">${c.done ? '✓' : ''}</span>
+                <span>${U.esc(c.name)}</span>
+              </div>`).join('')}
+          </div>
+
+          <div class="form-actions">
+            <button class="pill-btn pill-btn--danger" data-del="${pr.id}">🗑️ Excluir</button>
+            <button class="pill-btn pill-btn--ghost" data-close>Fechar</button>
+          </div>
+        </div>
+      </div>`;
+
+    const back = PP.Clients.mountModal(html);
+
+    // clique numa etapa avança o status (todo → doing → done → todo)
+    back.querySelectorAll('[data-stage]').forEach(el => el.onclick = () => {
+      const i = Number(el.dataset.stage);
+      const order = ['todo', 'doing', 'done'];
+      const cur = pr.stages[i].status;
+      const next = order[(order.indexOf(cur) + 1) % order.length];
+      pr.stages[i].status = next;
+      pr.stages[i].progress = next === 'done' ? 100 : next === 'doing' ? 50 : 0;
+      pr.stages[i].date = next === 'done' ? U.today() : pr.stages[i].date;
+      S.projects.update(pr.id, { stages: pr.stages });
+      // re-render da etapa e da barra
+      el.outerHTML = stageHTML(pr.stages[i], i);
+      rebind(back, pr);
+      updateBar(back, pr);
+      if (next === 'done') S.log(`Etapa “${pr.stages[i].name}” concluída em “${pr.name}”`, '✅');
+    });
+
+    // checklist toggle
+    back.querySelectorAll('[data-check]').forEach(el => el.onclick = () => {
+      const i = Number(el.dataset.check);
+      pr.checklist[i].done = !pr.checklist[i].done;
+      S.projects.update(pr.id, { checklist: pr.checklist });
+      el.classList.toggle('is-done', pr.checklist[i].done);
+      el.querySelector('.check-box').textContent = pr.checklist[i].done ? '✓' : '';
+    });
+
+    back.querySelector('[data-del]').onclick = () => { back.remove(); removeProject(pr.id); };
+  }
+
+  function stageHTML(s, i) {
+    const cls = s.status === 'done' ? 'is-done' : s.status === 'doing' ? 'is-doing' : '';
+    const dot = s.status === 'done' ? '✓' : s.status === 'doing' ? '…' : '○';
+    return `<div class="tl-step ${cls}" data-stage="${i}" role="button" tabindex="0" title="Clique para avançar o status">
+      <span class="tl-step__dot">${dot}</span>
+      <div>
+        <div class="tl-step__name">${U.esc(s.name)}</div>
+        <div class="tl-step__meta">${STAGE_STATUS[s.status]}${s.date ? ' · ' + U.dateBR(s.date) : ''}</div>
+      </div>
+      <span class="chip">${s.progress || 0}%</span>
+    </div>`;
+  }
+
+  // re-liga o handler da etapa recém-substituída
+  function rebind(back, pr) {
+    const S = PP.Storage;
+    back.querySelectorAll('[data-stage]').forEach(el => {
+      if (el._bound) return;
+      el._bound = true;
+      el.onclick = () => {
+        const i = Number(el.dataset.stage);
+        const order = ['todo', 'doing', 'done'];
+        const next = order[(order.indexOf(pr.stages[i].status) + 1) % order.length];
+        pr.stages[i].status = next;
+        pr.stages[i].progress = next === 'done' ? 100 : next === 'doing' ? 50 : 0;
+        pr.stages[i].date = next === 'done' ? U.today() : pr.stages[i].date;
+        S.projects.update(pr.id, { stages: pr.stages });
+        el.outerHTML = stageHTML(pr.stages[i], i);
+        rebind(back, pr); updateBar(back, pr);
+      };
+    });
+  }
+
+  function updateBar(back, pr) {
+    const pct = progress(pr);
+    const bar = back.querySelector('#pr-bar'); const lbl = back.querySelector('#pr-pct');
+    if (bar) bar.style.width = pct + '%';
+    if (lbl) lbl.textContent = pct + '%';
+  }
+
+  function removeProject(id) {
+    const pr = PP.Storage.projects.get(id);
+    U.confirm(`Excluir o projeto “${pr?.name}”?`, { danger: true, okText: 'Excluir' }).then(ok => {
+      if (!ok) return;
+      PP.Storage.projects.remove(id);
+      PP.Storage.log(`Projeto “${pr?.name}” excluído`, '🗑️');
+      U.toast('Projeto excluído', 'info');
+      PP.Router.reload();
+    });
+  }
+
+  PP.Projects = { render, openForm, openDetail };
+})();
+
+
+/* =====================================================================
+   Prospeceve · financial.js
+   Controle financeiro: pagamentos, parcelas, formas de pagamento e
+   totais automáticos (recebido, pendente, lucro mensal e anual).
+   Expõe window.PP.Financial.
+   ===================================================================== */
+(function () {
+  'use strict';
+  window.PP = window.PP || {};
+  const U = PP.Utils;
+  const METHODS = ['PIX', 'Cartão', 'Dinheiro', 'Transferência', 'Boleto'];
+  const PAY_STATUS = [
+    { v: 'pago', t: 'Pago' }, { v: 'pendente', t: 'Pendente' }, { v: 'atrasado', t: 'Atrasado' },
+  ];
+
+  function totals() {
+    const list = PP.Storage.payments.all();
+    const contracted = list.reduce((s, p) => s + (Number(p.total) || 0), 0);
+    const received = list.reduce((s, p) => s + (Number(p.received) || 0), 0);
+    const pending = contracted - received;
+
+    const now = new Date();
+    const ym = now.toISOString().slice(0, 7);
+    const y = String(now.getFullYear());
+    const monthProfit = list.filter(p => (p.date || '').slice(0, 7) === ym)
+      .reduce((s, p) => s + (Number(p.received) || 0), 0);
+    const yearProfit = list.filter(p => (p.date || '').slice(0, 4) === y)
+      .reduce((s, p) => s + (Number(p.received) || 0), 0);
+
+    return { contracted, received, pending, monthProfit, yearProfit };
+  }
+
+  function render(container) {
+    const S = PP.Storage;
+    const payments = S.payments.all().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    const t = totals();
+
+    container.innerHTML = `
+      <div class="page-head">
+        <div>
+          <h1 class="page-head__title">🪙 Financeiro</h1>
+          <div class="page-head__sub">Entradas, parcelas e o quanto seu ateliê rendeu 💛</div>
+        </div>
+        <div class="page-head__spacer"></div>
+        <button class="pill-btn" id="pay-new"><span>＋</span> Novo pagamento</button>
+      </div>
+
+      <div class="grid grid--stats stagger">
+        ${stat('green', '🪙', U.money(t.received), 'Total recebido')}
+        ${stat('pink', '⏳', U.money(t.pending), 'Total pendente')}
+        ${stat('yellow', '📅', U.money(t.monthProfit), 'Lucro do mês')}
+        ${stat('blue', '📆', U.money(t.yearProfit), 'Lucro do ano')}
+      </div>
+
+      <section class="cushion" style="margin-top:22px">
+        <h3 class="section-title">💳 Pagamentos <span class="count-pill">${payments.length}</span></h3>
+        ${payments.length ? `<div class="table-wrap"><table class="p-table">
+          <thead><tr>
+            <th>Cliente</th><th>Total</th><th>Recebido</th><th>Restante</th>
+            <th>Forma</th><th>Parcelas</th><th>Status</th><th>Data</th><th></th>
+          </tr></thead>
+          <tbody>
+            ${payments.map(rowHTML).join('')}
+          </tbody>
+        </table></div>` : `<div class="empty"><span class="empty__emoji">🪙</span>
+          <div class="empty__title">Nenhum pagamento registrado</div>
+          <p>Registre entradas e parcelas para acompanhar o financeiro.</p></div>`}
+      </section>
+    `;
+
+    U.qs('#pay-new', container).onclick = () => openForm();
+    container.querySelectorAll('[data-edit]').forEach(el => el.onclick = () => openForm(el.dataset.edit));
+    container.querySelectorAll('[data-del]').forEach(el => el.onclick = () => removePayment(el.dataset.del));
+  }
+
+  function stat(color, ico, value, label) {
+    return `<div class="stat stat--${color}"><div class="stat__ico">${ico}</div>
+      <div class="stat__value">${value}</div><div class="stat__label">${label}</div></div>`;
+  }
+
+  function rowHTML(p) {
+    const client = PP.Storage.clients.get(p.clientId);
+    const rest = (Number(p.total) || 0) - (Number(p.received) || 0);
+    return `<tr>
+      <td><b>${U.esc(client?.name || '—')}</b></td>
+      <td>${U.money(p.total)}</td>
+      <td>${U.money(p.received)}</td>
+      <td>${U.money(rest)}</td>
+      <td><span class="chip">${U.esc(p.method || '—')}</span></td>
+      <td>${p.installments || 1}x</td>
+      <td><span class="status status--${p.status}">${statusLabel(p.status)}</span></td>
+      <td>${U.dateBR(p.date)}</td>
+      <td><div class="row-actions">
+        <button class="mini-btn" data-edit="${p.id}">✏️</button>
+        <button class="mini-btn mini-btn--danger" data-del="${p.id}">🗑️</button>
+      </div></td>
+    </tr>`;
+  }
+  const statusLabel = v => (PAY_STATUS.find(s => s.v === v) || { t: v }).t;
+
+  function openForm(id) {
+    const S = PP.Storage;
+    const p = id ? S.payments.get(id) : null;
+    const clients = S.clients.all();
+    const projects = S.projects.all();
+
+    const html = `
+      <div class="modal-backdrop">
+        <form class="modal" id="pay-form">
+          <div class="modal__head">
+            <h3 class="modal__title">${p ? '✏️ Editar pagamento' : '🪙 Novo pagamento'}</h3>
+            <button type="button" class="modal__close" data-close>✕</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-field form-field--full">
+              <label for="pay-client">Cliente *</label>
+              <select class="select" id="pay-client" name="clientId" required>
+                <option value="">— Selecione —</option>
+                ${clients.map(c => `<option value="${c.id}" ${p?.clientId === c.id ? 'selected' : ''}>${U.esc(c.name)}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-field form-field--full">
+              <label for="pay-project">Projeto (opcional)</label>
+              <select class="select" id="pay-project" name="projectId">
+                <option value="">— Nenhum —</option>
+                ${projects.map(pr => `<option value="${pr.id}" ${p?.projectId === pr.id ? 'selected' : ''}>${U.esc(pr.name)}</option>`).join('')}
+              </select>
+            </div>
+            ${num('total', 'Valor total (R$)', p?.total)}
+            ${num('entry', 'Entrada (R$)', p?.entry)}
+            ${num('received', 'Já recebido (R$)', p?.received)}
+            ${num('installments', 'Parcelas', p?.installments || 1)}
+            <div class="form-field">
+              <label for="pay-method">Forma de pagamento</label>
+              <select class="select" id="pay-method" name="method">
+                ${METHODS.map(m => `<option ${p?.method === m ? 'selected' : ''}>${m}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="pay-status">Status</label>
+              <select class="select" id="pay-status" name="status">
+                ${PAY_STATUS.map(s => `<option value="${s.v}" ${(p?.status || 'pendente') === s.v ? 'selected' : ''}>${s.t}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="pay-date">Data</label>
+              <input class="input" id="pay-date" name="date" type="date" value="${U.esc(p?.date || U.today())}">
+            </div>
+            <div class="form-field form-field--full">
+              <label for="pay-notes">Observações</label>
+              <textarea class="textarea" id="pay-notes" name="notes">${U.esc(p?.notes || '')}</textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="pill-btn pill-btn--ghost" data-close>Cancelar</button>
+            <button type="submit" class="pill-btn pill-btn--green">💾 Salvar</button>
+          </div>
+        </form>
+      </div>`;
+
+    const back = PP.Clients.mountModal(html);
+    back.querySelector('#pay-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      if (!f.get('clientId')) { U.toast('Escolha o cliente', 'warn'); return; }
+      const data = {
+        clientId: f.get('clientId'), projectId: f.get('projectId') || null,
+        total: Number(f.get('total')) || 0, entry: Number(f.get('entry')) || 0,
+        received: Number(f.get('received')) || 0, installments: Number(f.get('installments')) || 1,
+        method: f.get('method'), status: f.get('status'), date: f.get('date'), notes: f.get('notes'),
+      };
+      const client = S.clients.get(data.clientId);
+      if (p) { S.payments.update(p.id, data); U.toast('Pagamento atualizado!', 'ok'); }
+      else {
+        S.payments.add(data);
+        S.log(`Pagamento registrado · ${client?.name || ''} · ${U.money(data.total)}`, '🪙');
+        U.toast('Pagamento registrado!', 'ok', '💛');
+      }
+      back.remove();
+      PP.Notifications.refreshBadge();
+      PP.Router.reload();
+    });
+  }
+
+  function num(name, label, value) {
+    return `<div class="form-field"><label for="pay-${name}">${label}</label>
+      <input class="input" id="pay-${name}" name="${name}" type="number" min="0" step="0.01" value="${value ?? ''}"></div>`;
+  }
+
+  function removePayment(id) {
+    U.confirm('Excluir este pagamento?', { danger: true, okText: 'Excluir' }).then(ok => {
+      if (!ok) return;
+      PP.Storage.payments.remove(id);
+      PP.Storage.log('Pagamento excluído', '🗑️');
+      U.toast('Pagamento excluído', 'info');
+      PP.Notifications.refreshBadge();
+      PP.Router.reload();
+    });
+  }
+
+  PP.Financial = { render, openForm, totals };
+})();
+
+
+/* =====================================================================
+   Prospeceve · calendar.js
+   Calendário mensal navegável. Junta em cada dia:
+   pagamentos, entregas de projeto, follow-ups e renovações de domínio.
+   Expõe window.PP.Calendar.
+   ===================================================================== */
+(function () {
+  'use strict';
+  window.PP = window.PP || {};
+  const U = PP.Utils;
+  const DOW = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+  let cursor = new Date(); cursor.setDate(1);
+
+  /* Constrói um mapa { 'yyyy-mm-dd': [ {type,label} ] }. */
+  function buildEvents() {
+    const S = PP.Storage;
+    const ev = {};
+    const push = (iso, type, label) => {
+      if (!iso) return;
+      const key = iso.slice(0, 10);
+      (ev[key] = ev[key] || []).push({ type, label });
+    };
+
+    S.payments.all().forEach(p => {
+      const c = S.clients.get(p.clientId);
+      push(p.date, 'pay', `💵 ${c?.name || 'Pagamento'} · ${U.money(p.total)}`);
+    });
+    S.clients.all().forEach(c => {
+      push(c.nextFollowup, 'fup', `🌸 Follow-up · ${c.name}`);
+      if (c.domain?.expires) push(c.domain.expires, 'del', `🌐 Renovação · ${c.company || c.name}`);
+      if (c.maintenance?.nextPayment) push(c.maintenance.nextPayment, 'pay', `🔧 Manutenção · ${c.name}`);
+    });
+    S.projects.all().forEach(pr => {
+      const pub = pr.stages.find(s => s.name === 'Publicação');
+      if (pub?.date) push(pub.date, 'del', `📦 Entrega · ${pr.name}`);
+    });
+    return ev;
+  }
+
+  function render(container) {
+    const events = buildEvents();
+    const y = cursor.getFullYear(), m = cursor.getMonth();
+    const first = new Date(y, m, 1);
+    const startDow = first.getDay();
+    const daysInMonth = new Date(y, m + 1, 0).getDate();
+    const todayISO = U.today();
+
+    const cells = [];
+    // dias do mês anterior para preencher
+    const prevDays = new Date(y, m, 0).getDate();
+    for (let i = startDow - 1; i >= 0; i--) cells.push({ out: true, day: prevDays - i, iso: null });
+    for (let d = 1; d <= daysInMonth; d++) {
+      const iso = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      cells.push({ out: false, day: d, iso });
+    }
+    while (cells.length % 7 !== 0) cells.push({ out: true, day: cells.length, iso: null });
+
+    container.innerHTML = `
+      <div class="page-head">
+        <div>
+          <h1 class="page-head__title">📅 Calendário</h1>
+          <div class="page-head__sub">Pagamentos, entregas, reuniões, follow-ups e renovações</div>
+        </div>
+      </div>
+
+      <section class="cushion">
+        <div class="cal-head">
+          <button class="icon-btn" id="cal-prev" aria-label="Mês anterior">‹</button>
+          <h3 style="font-size:20px; min-width:190px; text-align:center">${MONTHS[m]} ${y}</h3>
+          <button class="icon-btn" id="cal-next" aria-label="Próximo mês">›</button>
+          <div class="page-head__spacer"></div>
+          <button class="pill-btn pill-btn--ghost pill-btn--sm" id="cal-today">Hoje</button>
+        </div>
+
+        <div class="cal-grid" style="margin-bottom:8px">
+          ${DOW.map(d => `<div class="cal-dow">${d}</div>`).join('')}
+        </div>
+        <div class="cal-grid">
+          ${cells.map(c => {
+            const list = c.iso ? (events[c.iso] || []) : [];
+            const isToday = c.iso === todayISO;
+            return `<div class="cal-cell ${c.out ? 'is-out' : ''} ${isToday ? 'is-today' : ''}">
+              <span class="cal-cell__num">${c.day}</span>
+              ${list.slice(0, 3).map(e => `<span class="cal-event cal-event--${e.type}" title="${U.esc(e.label)}">${U.esc(e.label)}</span>`).join('')}
+              ${list.length > 3 ? `<span class="page-head__sub" style="font-size:10px">+${list.length - 3} mais</span>` : ''}
+            </div>`;
+          }).join('')}
+        </div>
+
+        <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:16px; font-size:12px">
+          <span class="chip cal-event--pay">💵 Pagamentos</span>
+          <span class="chip cal-event--del">📦 Entregas / renovações</span>
+          <span class="chip cal-event--fup">🌸 Follow-ups</span>
+        </div>
+      </section>
+    `;
+
+    U.qs('#cal-prev', container).onclick = () => { cursor.setMonth(cursor.getMonth() - 1); render(container); };
+    U.qs('#cal-next', container).onclick = () => { cursor.setMonth(cursor.getMonth() + 1); render(container); };
+    U.qs('#cal-today', container).onclick = () => { cursor = new Date(); cursor.setDate(1); render(container); };
+  }
+
+  PP.Calendar = { render };
+})();
+
+
+/* =====================================================================
+   Prospeceve · reports.js
+   Relatórios: clientes por status, financeiro, projetos, produção,
+   faturamento por forma de pagamento. Expõe window.PP.Reports.
+   ===================================================================== */
+(function () {
+  'use strict';
+  window.PP = window.PP || {};
+  const U = PP.Utils;
+
+  function render(container) {
+    const S = PP.Storage;
+    const clients = S.clients.all();
+    const projects = S.projects.all();
+    const payments = S.payments.all();
+    const t = PP.Financial.totals();
+
+    // clientes por status
+    const byStatus = {};
+    clients.forEach(c => byStatus[c.status] = (byStatus[c.status] || 0) + 1);
+
+    // faturamento por forma de pagamento
+    const byMethod = {};
+    payments.forEach(p => byMethod[p.method || '—'] = (byMethod[p.method || '—'] || 0) + (Number(p.received) || 0));
+
+    // produção: etapas concluídas x total
+    let stagesDone = 0, stagesTotal = 0;
+    projects.forEach(pr => { stagesTotal += pr.stages.length; stagesDone += pr.stages.filter(s => s.status === 'done').length; });
+
+    const published = clients.filter(c => c.status === 'publicado' || c.status === 'finalizado').length;
+    const lost = clients.filter(c => c.status === 'perdido').length;
+    const conversion = clients.length ? Math.round((clients.filter(c => c.proposal?.accepted).length / clients.length) * 100) : 0;
+
+    container.innerHTML = `
+      <div class="page-head">
+        <div>
+          <h1 class="page-head__title">📋 Relatórios</h1>
+          <div class="page-head__sub">Uma visão geral do seu ateliê, com carinho pelos números 💐</div>
+        </div>
+        <div class="page-head__spacer"></div>
+        <button class="pill-btn pill-btn--ghost" id="rep-print">🖨️ Imprimir</button>
+      </div>
+
+      <div class="grid grid--stats stagger">
+        ${stat('green', '🧵', clients.length, 'Clientes')}
+        ${stat('blue', '🚀', published, 'Publicados')}
+        ${stat('pink', '💔', lost, 'Perdidos')}
+        ${stat('yellow', '🎯', conversion + '%', 'Conversão')}
+      </div>
+
+      <div class="grid grid--2" style="margin-top:22px; align-items:start">
+        <section class="cushion">
+          <h3 class="section-title">🧵 Clientes por status</h3>
+          ${Object.keys(byStatus).length ? Object.entries(byStatus)
+            .sort((a, b) => b[1] - a[1])
+            .map(([st, n]) => barRow(PP.Clients.statusLabel(st), n, clients.length)).join('')
+            : vazio()}
+        </section>
+
+        <section class="cushion">
+          <h3 class="section-title">💳 Faturamento por forma</h3>
+          ${Object.keys(byMethod).length ? Object.entries(byMethod)
+            .sort((a, b) => b[1] - a[1])
+            .map(([m, v]) => barRow(m, v, t.received, true)).join('')
+            : vazio()}
+        </section>
+      </div>
+
+      <div class="grid grid--2" style="margin-top:22px; align-items:start">
+        <section class="cushion">
+          <h3 class="section-title">🪙 Resumo financeiro</h3>
+          <div class="info-list">
+            ${line('Total contratado', U.money(t.contracted))}
+            ${line('Total recebido', U.money(t.received))}
+            ${line('Total pendente', U.money(t.pending))}
+            ${line('Lucro do mês', U.money(t.monthProfit))}
+            ${line('Lucro do ano', U.money(t.yearProfit))}
+          </div>
+        </section>
+
+        <section class="cushion">
+          <h3 class="section-title">🌼 Produção</h3>
+          <div class="info-list">
+            ${line('Projetos', projects.length)}
+            ${line('Etapas concluídas', `${stagesDone} de ${stagesTotal}`)}
+            ${line('Progresso geral', (stagesTotal ? Math.round(stagesDone / stagesTotal * 100) : 0) + '%')}
+          </div>
+          <div class="pbar" style="margin-top:14px"><div class="pbar__fill" style="width:${stagesTotal ? Math.round(stagesDone / stagesTotal * 100) : 0}%"></div></div>
+        </section>
+      </div>
+    `;
+
+    U.qs('#rep-print', container).onclick = () => window.print();
+  }
+
+  function barRow(label, value, total, money = false) {
+    const pct = total ? Math.round((value / total) * 100) : 0;
+    return `<div class="progress-row">
+      <span class="progress-row__label">${U.esc(label)}</span>
+      <div class="pbar pbar--blue" style="flex:1"><div class="pbar__fill" style="width:${pct}%"></div></div>
+      <span class="progress-row__pct">${money ? U.money(value) : value}</span>
+    </div>`;
+  }
+  function stat(color, ico, value, label) {
+    return `<div class="stat stat--${color}"><div class="stat__ico">${ico}</div>
+      <div class="stat__value">${value}</div><div class="stat__label">${label}</div></div>`;
+  }
+  function line(l, v) { return `<div class="info-list__row"><b>${l}</b><span>${v}</span></div>`; }
+  function vazio() { return `<div class="page-head__sub" style="padding:12px 0">Sem dados suficientes ainda 🌱</div>`; }
+
+  PP.Reports = { render };
+})();
+
+
+/* =====================================================================
+   Prospeceve · files.js
+   Arquivos: registro de logos, fotos, textos e documentos por cliente.
+   Guarda metadados (nome, tipo, tamanho, data) no LocalStorage.
+   Expõe window.PP.Files.
+   ===================================================================== */
+(function () {
+  'use strict';
+  window.PP = window.PP || {};
+  const U = PP.Utils;
+  const KINDS = ['Logo', 'Fotos', 'Textos', 'Contrato', 'Documento', 'Outro'];
+
+  function render(container) {
+    const S = PP.Storage;
+    const files = S.files.all().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+    container.innerHTML = `
+      <div class="page-head">
+        <div>
+          <h1 class="page-head__title">☁️ Arquivos</h1>
+          <div class="page-head__sub">Guarde referências de logos, fotos e documentos de cada cliente</div>
+        </div>
+        <div class="page-head__spacer"></div>
+        <button class="pill-btn" id="file-new"><span>＋</span> Registrar arquivo</button>
+      </div>
+
+      ${files.length ? `<div class="grid grid--cards stagger">
+        ${files.map(cardHTML).join('')}
+      </div>` : `<div class="cushion cushion--flat empty">
+        <span class="empty__emoji">☁️</span>
+        <div class="empty__title">Nenhum arquivo registrado</div>
+        <p>Registre aqui os arquivos que você recebe dos clientes.</p>
+        <div style="margin-top:14px"><button class="pill-btn" onclick="PP.Files.openForm()"><span>＋</span> Registrar arquivo</button></div>
+      </div>`}
+    `;
+
+    U.qs('#file-new', container).onclick = () => openForm();
+    container.querySelectorAll('[data-del]').forEach(el => el.onclick = () => removeFile(el.dataset.del));
+  }
+
+  function cardHTML(f) {
+    const client = PP.Storage.clients.get(f.clientId);
+    const ico = ({ Logo: '🎨', Fotos: '📷', Textos: '📝', Contrato: '📄', Documento: '📁' }[f.kind]) || '📎';
+    return `<article class="entity-card">
+      <div class="entity-card__top">
+        <div class="entity-card__avatar" style="background:linear-gradient(180deg,#d5f0ff,#81d4fa);color:#0c4f6b">${ico}</div>
+        <div style="min-width:0">
+          <div class="entity-card__name" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${U.esc(f.name)}</div>
+          <div class="entity-card__meta">${U.esc(f.kind || 'Arquivo')} · ${U.esc(f.size || '')}</div>
+        </div>
+      </div>
+      <div class="entity-card__row">🧵 ${U.esc(client?.name || 'Sem cliente')}</div>
+      <div class="entity-card__row">🗓️ ${U.dateBR(f.date)}</div>
+      <div class="entity-card__foot">
+        <button class="mini-btn mini-btn--danger" data-del="${f.id}">🗑️ Remover</button>
+      </div>
+    </article>`;
+  }
+
+  function openForm() {
+    const S = PP.Storage;
+    const clients = S.clients.all();
+    const html = `
+      <div class="modal-backdrop">
+        <form class="modal" id="file-form">
+          <div class="modal__head">
+            <h3 class="modal__title">☁️ Registrar arquivo</h3>
+            <button type="button" class="modal__close" data-close>✕</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-field form-field--full">
+              <label for="fl-client">Cliente</label>
+              <select class="select" id="fl-client" name="clientId">
+                <option value="">— Sem cliente —</option>
+                ${clients.map(c => `<option value="${c.id}">${U.esc(c.name)}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-field form-field--full">
+              <label for="fl-name">Nome do arquivo *</label>
+              <input class="input" id="fl-name" name="name" placeholder="ex.: logo-cliente.png" required>
+            </div>
+            <div class="form-field">
+              <label for="fl-kind">Tipo</label>
+              <select class="select" id="fl-kind" name="kind">
+                ${KINDS.map(k => `<option>${k}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="fl-size">Tamanho</label>
+              <input class="input" id="fl-size" name="size" placeholder="ex.: 84 KB">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="pill-btn pill-btn--ghost" data-close>Cancelar</button>
+            <button type="submit" class="pill-btn pill-btn--green">💾 Registrar</button>
+          </div>
+        </form>
+      </div>`;
+    const back = PP.Clients.mountModal(html);
+    back.querySelector('#file-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      const name = (f.get('name') || '').toString().trim();
+      if (!name) { U.toast('Informe o nome do arquivo', 'warn'); return; }
+      S.files.add({ clientId: f.get('clientId') || null, name, kind: f.get('kind'),
+        size: f.get('size'), date: U.today() });
+      S.log(`Arquivo registrado: ${name}`, '☁️');
+      U.toast('Arquivo registrado!', 'ok', '☁️');
+      back.remove();
+      PP.Router.reload();
+    });
+  }
+
+  function removeFile(id) {
+    U.confirm('Remover este arquivo do registro?', { danger: true, okText: 'Remover' }).then(ok => {
+      if (!ok) return;
+      PP.Storage.files.remove(id);
+      U.toast('Arquivo removido', 'info');
+      PP.Router.reload();
+    });
+  }
+
+  PP.Files = { render, openForm };
+})();
+
+
+/* =====================================================================
+   Prospeceve · settings.js
+   Configurações: nome, empresa, tema, backup (exportar/importar) e
+   reset/limpeza dos dados. Expõe window.PP.Settings.
+   ===================================================================== */
+(function () {
+  'use strict';
+  window.PP = window.PP || {};
+  const U = PP.Utils;
+
+  function accentSwatch(key, color, label, current) {
+    const active = (current || 'green') === key;
+    return `<button type="button" class="accent-swatch ${active ? 'is-active' : ''}" data-accent="${key}"
+        style="--swatch-color:${color}" title="${label}">
+      <span class="accent-swatch__dot"></span> ${label}
+    </button>`;
+  }
+
+  function render(container) {
+    const s = PP.Storage.settings();
+
+    container.innerHTML = `
+      <div class="page-head">
+        <div>
+          <h1 class="page-head__title">⚙️ Configurações</h1>
+          <div class="page-head__sub">Ajuste seu ateliê do jeitinho que você gosta 🌷</div>
+        </div>
+      </div>
+
+      <div class="grid grid--2" style="align-items:start">
+        <section class="cushion">
+          <h3 class="section-title">🧸 Perfil</h3>
+          <div class="form-grid">
+            <div class="form-field form-field--full">
+              <label for="set-name">Seu nome</label>
+              <input class="input" id="set-name" value="${U.esc(s.userName || '')}">
+            </div>
+            <div class="form-field form-field--full">
+              <label for="set-company">Nome do ateliê / empresa</label>
+              <input class="input" id="set-company" value="${U.esc(s.company || '')}">
+            </div>
+          </div>
+          <div class="form-actions" style="justify-content:flex-start">
+            <button class="pill-btn pill-btn--green" id="set-save">💾 Salvar perfil</button>
+          </div>
+        </section>
+
+        <section class="cushion">
+          <h3 class="section-title">🎨 Aparência</h3>
+          <p class="page-head__sub" style="margin-bottom:12px">Escolha entre o céu de dia e o céu de anoitecer.</p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap">
+            <button class="pill-btn ${s.theme !== 'dark' ? '' : 'pill-btn--ghost'}" data-theme="light">☀️ Claro</button>
+            <button class="pill-btn ${s.theme === 'dark' ? '' : 'pill-btn--ghost'}" data-theme="dark">🌙 Escuro</button>
+          </div>
+
+          <p class="page-head__sub" style="margin:18px 0 10px">Cor de destaque do menu e dos botões:</p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap">
+            ${accentSwatch('green', '#93c85a', 'Verde', s.accentTheme)}
+            ${accentSwatch('pink', '#f7b3cf', 'Rosa', s.accentTheme)}
+            ${accentSwatch('blue', '#8fd4f5', 'Azul', s.accentTheme)}
+            ${accentSwatch('lilac', '#d3b6f0', 'Lilás', s.accentTheme)}
+          </div>
+        </section>
+      </div>
+
+      <section class="cushion" style="margin-top:22px">
+        <h3 class="section-title">🔒 Segurança</h3>
+        <p class="page-head__sub" style="margin-bottom:14px">
+          Seu ateliê fica protegido por usuário e senha neste navegador. Ao sair, será
+          necessário entrar novamente para acessar seus dados.</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <button class="pill-btn pill-btn--ghost" id="set-logout">🚪 Sair da conta</button>
+        </div>
+      </section>
+
+      <section class="cushion" style="margin-top:22px">
+        <h3 class="section-title">💾 Backup dos dados</h3>
+        <p class="page-head__sub" style="margin-bottom:14px">
+          Seus dados ficam salvos apenas neste navegador (LocalStorage). Faça backup de vez em quando 🌼</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <button class="pill-btn pill-btn--blue" id="set-export">⬇️ Exportar backup (.json)</button>
+          <button class="pill-btn pill-btn--ghost" id="set-import">⬆️ Importar backup</button>
+          <input type="file" id="set-file" accept="application/json" hidden>
+        </div>
+      </section>
+
+      <section class="cushion" style="margin-top:22px">
+        <h3 class="section-title">🧹 Zona delicada</h3>
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <button class="pill-btn pill-btn--ghost" id="set-seed">🌱 Recarregar dados de exemplo</button>
+          <button class="pill-btn pill-btn--danger" id="set-wipe">🗑️ Apagar tudo</button>
+        </div>
+      </section>
+    `;
+
+    // salvar perfil
+    U.qs('#set-save', container).onclick = () => {
+      PP.Storage.saveSettings({
+        userName: U.qs('#set-name', container).value.trim() || 'Você',
+        company: U.qs('#set-company', container).value.trim(),
+      });
+      U.toast('Perfil salvo!', 'ok', '🧸');
+      PP.App.refreshProfile();
+    };
+
+    // tema claro/escuro
+    container.querySelectorAll('[data-theme]').forEach(btn => btn.onclick = () => {
+      PP.App.setTheme(btn.dataset.theme);
+      render(container);
+    });
+
+    // cor de destaque (accent)
+    container.querySelectorAll('[data-accent]').forEach(btn => btn.onclick = () => {
+      PP.App.setAccentTheme(btn.dataset.accent);
+      render(container);
+    });
+
+    // sair
+    U.qs('#set-logout', container).onclick = () => {
+      U.confirm('Sair do Prospeceve? Você vai precisar entrar de novo com usuário e senha.', { okText: 'Sair' })
+        .then(ok => { if (ok) PP.Auth.logout(); });
+    };
+
+    // exportar
+    U.qs('#set-export', container).onclick = () => {
+      const blob = new Blob([PP.Storage.export()], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `prospeceve-backup-${U.today()}.json`;
+      a.click(); URL.revokeObjectURL(url);
+      U.toast('Backup exportado!', 'ok', '⬇️');
+    };
+
+    // importar
+    const fileInput = U.qs('#set-file', container);
+    U.qs('#set-import', container).onclick = () => fileInput.click();
+    fileInput.onchange = (e) => {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (PP.Storage.import(reader.result)) {
+          U.toast('Backup importado!', 'ok', '⬆️');
+          PP.App.refreshProfile(); PP.Notifications.refreshBadge(); PP.Router.reload();
+        } else U.toast('Arquivo de backup inválido', 'error');
+      };
+      reader.readAsText(file);
+    };
+
+    // recarregar exemplo
+    U.qs('#set-seed', container).onclick = () => {
+      U.confirm('Isto substitui seus dados atuais pelos dados de exemplo. Continuar?', { danger: true, okText: 'Recarregar' })
+        .then(ok => { if (!ok) return; PP.Storage.reset(); afterReset(); });
+    };
+
+    // apagar tudo
+    U.qs('#set-wipe', container).onclick = () => {
+      U.confirm('Isto apaga TODOS os seus clientes, projetos e pagamentos. Esta ação não pode ser desfeita. Continuar?', { danger: true, okText: 'Apagar tudo' })
+        .then(ok => { if (!ok) return; PP.Storage.wipe(); afterReset(); });
+    };
+
+    function afterReset() {
+      U.toast('Dados atualizados', 'info');
+      PP.App.refreshProfile(); PP.Notifications.refreshBadge();
+      location.hash = '#/dashboard'; PP.Router.reload();
+    }
+  }
+
+  PP.Settings = { render };
+})();
+
+
+/* =====================================================================
+   Prospeceve · router.js
+   Roteador SPA por hash (#/rota). Renderiza o módulo certo no #app-content
+   sem recarregar a página. Expõe window.PP.Router.
+   ===================================================================== */
+(function () {
+  'use strict';
+  window.PP = window.PP || {};
+
+  const routes = {
+    dashboard:     () => PP.Dashboard,
+    clientes:      () => PP.Clients,
+    projetos:      () => PP.Projects,
+    financeiro:    () => PP.Financial,
+    calendario:    () => PP.Calendar,
+    relatorios:    () => PP.Reports,
+    arquivos:      () => PP.Files,
+    configuracoes: () => PP.Settings,
+  };
+
+  function current() {
+    const hash = (location.hash || '#/dashboard').replace(/^#\//, '');
+    return routes[hash] ? hash : 'dashboard';
+  }
+
+  function handle() {
+    const name = current();
+    const content = document.getElementById('app-content');
+    if (!content) return;
+
+    // marca o item ativo no menu
+    document.querySelectorAll('.nav-item').forEach(a =>
+      a.classList.toggle('is-active', a.dataset.route === name));
+
+    // renderiza com uma animação de entrada
+    content.classList.remove('fade-in'); void content.offsetWidth; content.classList.add('fade-in');
+    const mod = routes[name]();
+    try {
+      mod.render(content);
+    } catch (e) {
+      console.error('Erro ao renderizar a rota', name, e);
+      content.innerHTML = `<div class="cushion empty"><span class="empty__emoji">😿</span>
+        <div class="empty__title">Algo tropeçou nas costuras…</div>
+        <p>${PP.Utils.esc(e.message)}</p></div>`;
+    }
+
+    // fecha o menu no mobile e rola ao topo
+    document.getElementById('app')?.classList.remove('sidebar-open');
+    document.getElementById('overlay')?.setAttribute('hidden', '');
+    content.scrollTop = 0;
+
+    // atualiza notificações
+    PP.Notifications.refreshBadge();
+  }
+
+  const Router = {
+    start() { window.addEventListener('hashchange', handle); handle(); },
+    /** Re-renderiza a rota atual (após criar/editar/excluir algo). */
+    reload() { handle(); },
+    go(name) { location.hash = '#/' + name; },
+    current,
+  };
+
+  PP.Router = Router;
+})();
+
+
+/* =====================================================================
+   Prospeceve · app.js
+   Ponto de entrada. Cuida da tela de carregamento, da barra superior,
+   do tema, da busca global e liga tudo ao roteador.
+   Expõe window.PP.App.
+   ===================================================================== */
+(function () {
+  'use strict';
+  window.PP = window.PP || {};
+  const U = PP.Utils;
+
+  /* ---------- Tela de carregamento ---------- */
+  function runLoading(done) {
+    const screen = document.getElementById('loading-screen');
+    const fill = document.getElementById('loading-bar-fill');
+    const percent = document.getElementById('loading-percent');
+    let p = 0;
+
+    const tick = () => {
+      p += Math.random() * 18 + 6;
+      if (p >= 100) p = 100;
+      fill.style.width = p + '%';
+      percent.textContent = Math.floor(p) + '%';
+      if (p < 100) {
+        setTimeout(tick, 180 + Math.random() * 160);
+      } else {
+        setTimeout(() => {
+          screen.classList.add('is-hidden');
+          setTimeout(() => { screen.remove(); done(); }, 600);
+        }, 350);
+      }
+    };
+    setTimeout(tick, 300);
+  }
+
+  /* ---------- Tema ---------- */
+  function setTheme(theme) {
+    document.body.classList.toggle('theme-dark', theme === 'dark');
+    const btn = document.getElementById('btn-theme');
+    if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+    PP.Storage.saveSettings({ theme });
+  }
+  function toggleTheme() {
+    const cur = PP.Storage.settings().theme === 'dark' ? 'light' : 'dark';
+    setTheme(cur);
+  }
+
+  const ACCENTS = ['green', 'pink', 'blue', 'lilac'];
+  function setAccentTheme(accent) {
+    if (!ACCENTS.includes(accent)) accent = 'green';
+    ACCENTS.forEach(a => document.body.classList.remove('theme-accent-' + a));
+    if (accent !== 'green') document.body.classList.add('theme-accent-' + accent);
+    PP.Storage.saveSettings({ accentTheme: accent });
+  }
+
+  /* ---------- Perfil no topo ---------- */
+  function refreshProfile() {
+    const s = PP.Storage.settings();
+    const avatar = document.getElementById('profile-avatar');
+    const name = document.getElementById('profile-name');
+    if (avatar) avatar.textContent = U.initials(s.userName || 'Você');
+    if (name) name.textContent = s.userName || 'Você';
+  }
+
+  /* ---------- Busca global ---------- */
+  function setupSearch() {
+    const input = document.getElementById('global-search');
+    const box = document.getElementById('search-results');
+    if (!input) return;
+
+    const run = U.debounce(() => {
+      const q = input.value.trim().toLowerCase();
+      if (!q) { box.hidden = true; box.innerHTML = ''; return; }
+
+      const S = PP.Storage;
+      const results = [];
+      S.clients.all().forEach(c => {
+        if ([c.name, c.company, c.phone, c.city, c.region].some(f => (f || '').toLowerCase().includes(q)))
+          results.push({ ico: '🧵', label: c.name, sub: c.company || c.city || '', action: () => PP.Clients.openDetail(c.id) });
+      });
+      S.projects.all().forEach(pr => {
+        if ((pr.name || '').toLowerCase().includes(q))
+          results.push({ ico: '🌼', label: pr.name, sub: 'Projeto', action: () => PP.Projects.openDetail(pr.id) });
+      });
+
+      if (!results.length) {
+        box.innerHTML = `<div class="search__result">🔍 <span>Nada encontrado para “${U.esc(q)}”</span></div>`;
+      } else {
+        box.innerHTML = results.slice(0, 8).map((r, i) => `
+          <div class="search__result" data-i="${i}">
+            <span>${r.ico}</span><span>${U.esc(r.label)}</span><small>${U.esc(r.sub)}</small>
+          </div>`).join('');
+        box.querySelectorAll('[data-i]').forEach(el => el.onclick = () => {
+          results[Number(el.dataset.i)].action();
+          box.hidden = true; input.value = '';
+        });
+      }
+      box.hidden = false;
+    }, 200);
+
+    input.addEventListener('input', run);
+    // fecha ao clicar fora
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search')) box.hidden = true;
+    });
+  }
+
+  /* ---------- Notificações ---------- */
+  function setupNotifications() {
+    const btn = document.getElementById('btn-notifications');
+    const panel = document.getElementById('notif-panel');
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const willOpen = panel.hidden;
+      if (willOpen) PP.Notifications.renderPanel();
+      panel.hidden = !willOpen;
+    };
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#notif-panel') && !e.target.closest('#btn-notifications')) panel.hidden = true;
+    });
+  }
+
+  /* ---------- Menu mobile ---------- */
+  function setupMobileMenu() {
+    const app = document.getElementById('app');
+    const overlay = document.getElementById('overlay');
+    document.getElementById('menu-toggle').onclick = () => {
+      const open = app.classList.toggle('sidebar-open');
+      overlay.hidden = !open;
+    };
+    overlay.onclick = () => { app.classList.remove('sidebar-open'); overlay.hidden = true; };
+  }
+
+  /* ---------- Menu compacto (recolher/expandir no desktop) ---------- */
+  function setupSidebarCollapse() {
+    const app = document.getElementById('app');
+    const btn = document.getElementById('sidebar-collapse-btn');
+    if (!btn) return;
+    btn.onclick = () => {
+      const compact = app.classList.toggle('sidebar-compact');
+      btn.textContent = compact ? '»' : '«';
+      btn.title = compact ? 'Expandir menu' : 'Recolher menu';
+      PP.Storage.saveSettings({ sidebarCompact: compact });
+    };
+  }
+
+  /* ---------- Boot ---------- */
+  function boot() {
+    PP.Storage.load();
+    const s = PP.Storage.settings();
+
+    // aplica tema salvo
+    document.body.classList.toggle('theme-dark', s.theme === 'dark');
+    const themeBtn = document.getElementById('btn-theme');
+    if (themeBtn) themeBtn.textContent = s.theme === 'dark' ? '☀️' : '🌙';
+    if (s.accentTheme && s.accentTheme !== 'green') {
+      document.body.classList.add('theme-accent-' + s.accentTheme);
+    }
+    if (s.sidebarCompact) {
+      document.getElementById('app').classList.add('sidebar-compact');
+      const collapseBtn = document.getElementById('sidebar-collapse-btn');
+      if (collapseBtn) { collapseBtn.textContent = '»'; collapseBtn.title = 'Expandir menu'; }
+    }
+
+    refreshProfile();
+    U.attachRipples(document);
+
+    // topo
+    document.getElementById('btn-theme').onclick = toggleTheme;
+    document.getElementById('btn-new-client').onclick = () => PP.Clients.openForm();
+    document.getElementById('btn-profile').onclick = () => PP.Router.go('configuracoes');
+    setupSearch();
+    setupNotifications();
+    setupMobileMenu();
+    setupSidebarCollapse();
+
+    // rota inicial
+    if (!location.hash) location.hash = '#/dashboard';
+    PP.Router.start();
+    PP.Notifications.refreshBadge();
+  }
+
+  function init() {
+    PP.Storage.load();
+
+    const startAfterLogin = () => {
+      document.getElementById('loading-screen').hidden = false;
+      runLoading(() => {
+        document.getElementById('app').hidden = false;
+        boot();
+      });
+    };
+
+    if (PP.Auth.isLoggedIn()) {
+      document.getElementById('login-screen')?.remove();
+      startAfterLogin();
+    } else {
+      PP.Auth.showLogin(startAfterLogin);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+
+  PP.App = { setTheme, toggleTheme, refreshProfile, setAccentTheme };
+})();
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+/* =====================================================================
+   Prospeceve · responsive.css
+   Desktop · Notebook · Tablet · Celular
+   ===================================================================== */
+
+/* Notebook / telas médias */
+@media (max-width: 1180px) {
+  .grid--stats { grid-template-columns: repeat(2, 1fr); }
+  .grid--3 { grid-template-columns: repeat(2, 1fr); }
+  .detail-grid { grid-template-columns: 1fr; }
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  :root { --sidebar-w: 230px; }
+
+  /* Menu vira gaveta deslizante */
+  .sidebar {
+    position: fixed; inset: 0 auto 0 0; z-index: 45;
+    transform: translateX(-104%); transition: transform .3s cubic-bezier(.2,.8,.2,1);
+  }
+  .app.sidebar-open .sidebar { transform: translateX(0); }
+  .app:not(.sidebar-open) .overlay { display: none !important; }
+
+  .topbar__menu { display: grid; }
+  .grid--2 { grid-template-columns: 1fr; }
+  .form-grid, .form-grid--3 { grid-template-columns: repeat(2, 1fr); }
+  .progress-row__label { width: 120px; }
+
+  /* no celular a sidebar já é uma gaveta; o modo compacto não se aplica */
+  .sidebar__collapse-btn { display: none; }
+  .app.sidebar-compact .sidebar { width: var(--sidebar-w); }
+  .app.sidebar-compact .sidebar__brand-name,
+  .app.sidebar-compact .nav-item__label { display: inline; }
+}
+
+/* Celular */
+@media (max-width: 620px) {
+  .content { padding: var(--sp-3) var(--sp-3) var(--sp-6); }
+  .topbar { margin: 10px 12px 0; padding: 0 12px; height: 74px; gap: 8px; }
+  .topbar__actions { gap: 6px; }
+
+  /* Esconde textos longos no topo, mantém ícones */
+  .pill-btn--yellow#btn-new-client { padding: 10px 12px; font-size: 0; }
+  .pill-btn--yellow#btn-new-client span { font-size: 20px; }
+  .profile__name { display: none; }
+  .notif-panel { right: 10px; width: calc(100vw - 20px); }
+
+  .grid--stats { grid-template-columns: repeat(2, 1fr); }
+  .stat__value { font-size: 22px; }
+  .page-head__title { font-size: 22px; }
+
+  /* bordas finas e discretas, consistentes em qualquer tamanho de tela */
+
+  .form-grid, .form-grid--3 { grid-template-columns: 1fr; }
+  .modal { padding: var(--sp-4) var(--sp-3); }
+
+  .cal-cell { min-height: 62px; }
+  .cal-event { font-size: 9px; }
+
+  .icon-btn { width: 42px; height: 42px; font-size: 18px; }
+  .info-list__row b { min-width: 100px; }
+}
+
+/* Telas bem pequenas */
+@media (max-width: 400px) {
+  .grid--stats { grid-template-columns: 1fr; }
+  .cal-dow { font-size: 10px; }
+}

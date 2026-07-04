@@ -1,0 +1,154 @@
+/* =====================================================================
+   Prospeceve · animations.css
+   Tela de carregamento, nuvens flutuando e micro-animações (só CSS).
+   ===================================================================== */
+
+/* ---------- Tela de carregamento ---------- */
+.loading-screen {
+  position: fixed; inset: 0; z-index: 500;
+  display: grid; place-items: center;
+  background: linear-gradient(180deg, #bfe8ff 0%, #8fd0f5 100%);
+  overflow: hidden;
+  transition: opacity .6s ease, visibility .6s ease;
+}
+.loading-screen.is-hidden { opacity: 0; visibility: hidden; }
+
+.loading-sky { position: absolute; inset: 0; }
+.cloud {
+  position: absolute; display: block;
+  width: 160px; height: 60px; background: #fff; border-radius: 60px;
+  filter: drop-shadow(0 10px 16px rgba(0,0,0,.08));
+  opacity: .95;
+}
+.cloud::before, .cloud::after {
+  content: ""; position: absolute; background: #fff; border-radius: 50%;
+}
+.cloud::before { width: 70px; height: 70px; top: -30px; left: 24px; }
+.cloud::after  { width: 96px; height: 96px; top: -46px; right: 24px; }
+.cloud--1 { top: 16%;  left: -180px; transform: scale(1);   animation: drift 26s linear infinite; }
+.cloud--2 { top: 42%;  left: -180px; transform: scale(.7);  animation: drift 34s linear infinite 4s; }
+.cloud--3 { top: 66%;  left: -180px; transform: scale(1.2); animation: drift 30s linear infinite 8s; }
+.cloud--4 { top: 82%;  left: -180px; transform: scale(.6);  animation: drift 22s linear infinite 2s; }
+
+@keyframes drift { to { left: 110%; } }
+
+.loading-content { position: relative; text-align: center; z-index: 2; animation: pop .6s ease both; }
+.loading-logo { font-size: 78px; animation: bob 2.4s ease-in-out infinite; filter: drop-shadow(0 6px 6px rgba(0,0,0,.12)); }
+.loading-title {
+  font-size: 46px; color: #35521a; margin-top: 4px;
+  text-shadow: 0 2px 0 rgba(255,255,255,.6);
+}
+.loading-message { color: #3a5f75; font-weight: 600; margin: 6px 0 22px; }
+.loading-bar {
+  width: 280px; height: 18px; margin: 0 auto;
+  background: #ffffff8c; border-radius: 999px; overflow: hidden;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,.12); border: 2px dashed #ffffff;
+}
+.loading-bar__fill {
+  height: 100%; width: 0%; border-radius: 999px;
+  background: linear-gradient(90deg, #8ed6f8, #59bfef);
+  transition: width .3s ease;
+}
+.loading-percent { display: inline-block; margin-top: 8px; color: #3a5f75; font-weight: 700; }
+
+@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes pop { from { transform: scale(.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(7px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(3px); }
+}
+
+/* ---------- Tela de login ---------- */
+.login-screen {
+  position: fixed; inset: 0; z-index: 600;
+  display: grid; place-items: center;
+  background: linear-gradient(180deg, #bfe8ff 0%, #8fd0f5 100%);
+  overflow: hidden;
+  transition: opacity .5s var(--ease), visibility .5s var(--ease);
+}
+.login-screen.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.login-sky { position: absolute; inset: 0; }
+.login-card {
+  position: relative; z-index: 2;
+  width: min(380px, 88vw);
+  text-align: center;
+  animation: pop .5s var(--ease) both;
+  background: #fff !important; /* sempre opaco, mesmo com o hover-transparente do .cushion */
+}
+.login-card__logo { font-size: 52px; animation: bob 2.4s ease-in-out infinite; }
+.login-card__title {
+  font-size: 30px; color: #35521a; margin-top: 2px;
+  text-shadow: 0 1px 0 rgba(255,255,255,.7), 0 -1px 0 rgba(93,64,55,.10);
+}
+.login-card__sub { color: var(--ink-soft); font-size: 13.5px; margin: 6px 0 18px; }
+.login-card .form-field { text-align: left; margin-bottom: 12px; }
+.login-card__remember {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--ink-soft); margin: 4px 0 16px; cursor: pointer;
+}
+.login-card__error {
+  background: #ffe3e3; color: #b23b3b; border-radius: var(--r-sm);
+  padding: 8px 10px; font-size: 13px; font-weight: 600; margin-bottom: 12px;
+}
+.login-card__submit { width: 100%; justify-content: center; font-size: 16px; padding: 12px; }
+
+/* ---------- Entrada de telas ---------- */
+.fade-in { animation: fadeIn .4s ease both; }
+.rise-in { animation: riseIn .45s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* stagger leve para cartões */
+.stagger > * { animation: riseIn .45s cubic-bezier(.2,.8,.2,1) both; }
+.stagger > *:nth-child(1){ animation-delay: .02s; }
+.stagger > *:nth-child(2){ animation-delay: .06s; }
+.stagger > *:nth-child(3){ animation-delay: .10s; }
+.stagger > *:nth-child(4){ animation-delay: .14s; }
+.stagger > *:nth-child(5){ animation-delay: .18s; }
+.stagger > *:nth-child(6){ animation-delay: .22s; }
+.stagger > *:nth-child(7){ animation-delay: .26s; }
+.stagger > *:nth-child(8){ animation-delay: .30s; }
+
+/* ---------- Modal ---------- */
+.modal-backdrop { animation: fadeIn .2s ease both; }
+.modal { animation: modalPop .3s cubic-bezier(.2,.9,.2,1) both; }
+@keyframes modalPop { from { transform: translateY(16px) scale(.96); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ---------- Toast ---------- */
+.toast { animation: toastIn .35s cubic-bezier(.2,.9,.2,1) both; }
+.toast.is-out { animation: toastOut .3s ease forwards; }
+@keyframes toastIn  { from { transform: translateX(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes toastOut { to   { transform: translateX(30px); opacity: 0; } }
+
+/* ---------- Efeito ripple nos botões ---------- */
+.pill-btn .ripple {
+  position: absolute; border-radius: 50%; transform: scale(0);
+  background: rgba(255,255,255,.55); animation: ripple .6s ease-out;
+  pointer-events: none;
+}
+@keyframes ripple { to { transform: scale(2.6); opacity: 0; } }
+
+/* ---------- Brilho suave (glow) em destaque ---------- */
+.glow { animation: glow 2.6s ease-in-out infinite; }
+@keyframes glow {
+  0%,100% { box-shadow: var(--shadow-card); }
+  50% { box-shadow: 0 12px 30px rgba(129,212,250,.5); }
+}
+
+/* ---------- Flor girando devagar (decoração) ---------- */
+.spin-slow { animation: spin 12s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- Respeitar preferência de menos movimento ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .cloud { animation: none; }
+}

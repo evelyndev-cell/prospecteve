@@ -1,0 +1,343 @@
+/* =====================================================================
+   Prospeceve · style.css
+   Base, tokens de design, fundo de céu, texturas de feltro,
+   layout geral, menu lateral e barra superior (nuvem).
+   Estética: plush / felt / kawaii · pastel · costuras · nuvens · flores
+   ===================================================================== */
+
+/* ---------------------------------------------------------------
+   1. TOKENS  (variáveis de cor, sombra, raio e espaçamento)
+   --------------------------------------------------------------- */
+:root {
+  /* Paleta pastel (baseada na referência) */
+  --sky-1:        #cdeeff;
+  --sky-2:        #a9def8;
+  --cloud:        #fbfbf7;
+  --cloud-soft:   #f1f1f1;
+
+  --green:        #8bc34a;
+  --green-deep:   #7bb03d;
+  --green-felt:   #93c85a;
+
+  /* Cor de destaque (menu lateral, botão principal, barras de progresso).
+     Trocável em Configurações → Aparência. Padrão = tema verde. */
+  --accent-felt:  var(--green-felt);
+  --accent-deep:  var(--green-deep);
+  --accent-text:  #2f4a16;
+  --accent-text-strong: #35521a;
+
+  --yellow:       #ffd54f;
+  --yellow-deep:  #f4c430;
+  --yellow-soft:  #fff9c4;
+
+  --pink:         #f48fb1;
+  --pink-soft:    #ffd7e6;
+  --blue:         #81d4fa;
+  --blue-soft:    #d5f0ff;
+  --orange:       #ffb877;
+  --lilac:        #cbb6f0;
+
+  --brown:        #5d4037;      /* texto principal (linha de costura escura) */
+  --ink:          #5d4037;
+  --ink-soft:     #8d7a70;
+  --line:         #e6ded6;
+
+  /* Sombras acolchoadas */
+  --shadow-soft:  0 8px 22px rgba(93, 64, 55, .10);
+  --shadow-card:  0 10px 26px rgba(93, 64, 55, .12);
+  --shadow-lift:  0 16px 34px rgba(93, 64, 55, .16);
+  --shadow-inset: inset 0 2px 6px rgba(255,255,255,.7), inset 0 -3px 8px rgba(93,64,55,.06);
+
+  /* Raios (nada quadrado) */
+  --r-sm: 12px;
+  --r-md: 18px;
+  --r-lg: 26px;
+  --r-xl: 34px;
+  --r-pill: 999px;
+
+  /* Espaçamento */
+  --sp-1: 6px;  --sp-2: 10px; --sp-3: 16px;
+  --sp-4: 22px; --sp-5: 30px; --sp-6: 42px;
+
+  --sidebar-w: 236px;
+  --topbar-h: 86px;
+
+  --font: 'Quicksand', 'Nunito', 'Poppins', system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Borda "de nuvem": pílula suave e uniforme nos 4 lados, com friso interno pontilhado (bordado) */
+  --cloud-radius: 30px / 38px;
+  --stitch: 2px dashed var(--line);
+
+  /* Curva de easing fluida, usada nas transições do site inteiro */
+  --ease: cubic-bezier(.22, 1, .36, 1);
+}
+
+/* Tema escuro suave (ainda fofo, "céu de anoitecer") */
+body.theme-dark {
+  --sky-1:      #3a4a6b;
+  --sky-2:      #556089;
+  --cloud:      #3f3552;
+  --cloud-soft: #4a4060;
+  --ink:        #f4eefb;
+  --ink-soft:   #cbbfe0;
+  --line:       #5a4f72;
+  --brown:      #f4eefb;
+  --green:      #86c25a;
+  --shadow-soft: 0 8px 22px rgba(0,0,0,.35);
+  --shadow-card: 0 10px 26px rgba(0,0,0,.4);
+}
+
+/* Temas de cor de destaque — trocáveis em Configurações → Aparência.
+   Mudam o menu lateral, o botão principal e as barras de progresso. */
+body.theme-accent-pink {
+  --accent-felt: #f7b3cf; --accent-deep: #e2789f;
+  --accent-text: #7a2b46; --accent-text-strong: #7a2b46;
+}
+body.theme-accent-blue {
+  --accent-felt: #8fd4f5; --accent-deep: #4fa8d8;
+  --accent-text: #1c4f66; --accent-text-strong: #1c4f66;
+}
+body.theme-accent-lilac {
+  --accent-felt: #d3b6f0; --accent-deep: #a878d6;
+  --accent-text: #4a2e6b; --accent-text-strong: #4a2e6b;
+}
+
+/* ---------------------------------------------------------------
+   2. RESET LEVE
+   --------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--ink);
+  font-weight: 500;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(1200px 600px at 15% -10%, #ffffff88, transparent 60%),
+    linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 100%);
+  background-attachment: fixed;
+  overflow: hidden; /* a rolagem acontece dentro de .content */
+}
+h1,h2,h3,h4 { margin: 0; font-weight: 700; color: var(--ink); }
+button { font-family: inherit; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+input, select, textarea { font-family: inherit; }
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-thumb { background: #ffffff9c; border: 3px solid transparent; background-clip: padding-box; border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 8px; }
+
+/* ---------------------------------------------------------------
+   3. LAYOUT
+   --------------------------------------------------------------- */
+.app { display: flex; height: 100vh; width: 100vw; }
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; height: 100vh; }
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-4) var(--sp-5) var(--sp-6);
+  scroll-behavior: smooth;
+}
+
+/* nuvenzinhas decorativas no rodapé de cada tela */
+.content::after {
+  content: "☁️  🌸  ☁️";
+  display: block;
+  text-align: center;
+  font-size: 20px;
+  opacity: .5;
+  letter-spacing: 18px;
+  padding: var(--sp-5) 0 var(--sp-2);
+}
+
+/* ---------------------------------------------------------------
+   4. MENU LATERAL  (feltro verde costurado)
+   --------------------------------------------------------------- */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background:
+    linear-gradient(180deg, var(--accent-felt), var(--accent-deep));
+  border-right: 3px dashed rgba(255,255,255,.55);
+  padding: var(--sp-4) var(--sp-3) var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  z-index: 40;
+  transition: width .35s var(--ease), padding .35s var(--ease);
+}
+
+.sidebar__brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 4px 6px var(--sp-3);
+  border-bottom: 2px dashed rgba(255,255,255,.5);
+  margin-bottom: var(--sp-2);
+}
+.sidebar__flower { font-size: 30px; filter: drop-shadow(0 2px 2px rgba(0,0,0,.15)); }
+.sidebar__brand-name {
+  font-size: 24px; font-weight: 700; color: var(--accent-text-strong);
+  text-shadow: 0 1px 0 rgba(255,255,255,.65), 0 -1px 0 rgba(0,0,0,.08);
+  white-space: nowrap; overflow: hidden;
+  transition: opacity .25s var(--ease);
+}
+.sidebar__collapse-btn {
+  margin-left: auto; flex-shrink: 0;
+  width: 26px; height: 26px; border-radius: 50%;
+  border: none; background: rgba(255,255,255,.4); color: var(--accent-text-strong);
+  font-weight: 700; cursor: pointer; display: grid; place-items: center;
+  transition: background .25s var(--ease), transform .25s var(--ease);
+}
+.sidebar__collapse-btn:hover { background: rgba(255,255,255,.7); }
+
+/* ---------- Modo compacto (menu recolhido, só ícones) ---------- */
+.app.sidebar-compact .sidebar { width: 82px; padding-left: var(--sp-2); padding-right: var(--sp-2); }
+.app.sidebar-compact .sidebar__brand { justify-content: center; }
+.app.sidebar-compact .sidebar__brand-name,
+.app.sidebar-compact .nav-item__label { display: none; }
+.app.sidebar-compact .sidebar__collapse-btn { margin-left: 0; transform: rotate(180deg); }
+.app.sidebar-compact .nav-item { justify-content: center; padding: 12px; }
+.app.sidebar-compact .nav-item__icon { margin: 0; }
+
+.sidebar__nav { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--r-pill);
+  color: var(--accent-text-strong);
+  font-weight: 600; font-size: 16px;
+  background: rgba(255,255,255,.14);
+  border: 2px dashed transparent;
+  transition: transform .35s var(--ease), background .35s var(--ease), box-shadow .35s var(--ease), border-color .35s var(--ease);
+}
+.nav-item__icon {
+  font-size: 20px;
+  width: 30px; height: 30px;
+  display: grid; place-items: center;
+  background: #ffffffcc;
+  border-radius: 50%;
+  box-shadow: 0 3px 6px rgba(0,0,0,.12);
+  flex-shrink: 0;
+}
+.nav-item:hover {
+  background: rgba(255,255,255,.32);
+  border-color: rgba(255,255,255,.6);
+  transform: translateX(4px);
+}
+.nav-item.is-active {
+  background: linear-gradient(180deg, var(--yellow), var(--yellow-deep));
+  color: #6a4b00;
+  border: 2px dashed #fff;
+  box-shadow: 0 8px 16px rgba(244,196,48,.45), var(--shadow-inset);
+  transform: translateX(2px);
+}
+
+.sidebar__foot { text-align: center; font-size: 22px; letter-spacing: 6px; opacity: .85; }
+
+/* ---------------------------------------------------------------
+   5. BARRA SUPERIOR  (nuvem branca acolchoada)
+   --------------------------------------------------------------- */
+.topbar {
+  height: var(--topbar-h);
+  flex-shrink: 0;
+  margin: var(--sp-3) var(--sp-4) 0;
+  padding: 0 var(--sp-4);
+  display: flex; align-items: center; gap: var(--sp-3);
+  background: var(--cloud);
+  border: 7px solid #fff;
+  border-radius: var(--cloud-radius);
+  box-shadow: var(--shadow-card);
+  position: relative;
+}
+.topbar::after {
+  content: "";
+  position: absolute; inset: 9px;
+  border: var(--stitch); border-radius: inherit;
+  opacity: .75; pointer-events: none;
+}
+.topbar__menu { display: none; }
+
+.search { position: relative; flex: 1; max-width: 560px; }
+.search__icon {
+  position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+  font-size: 16px; opacity: .6;
+}
+.search__input {
+  width: 100%; height: 48px;
+  padding: 0 18px 0 44px;
+  border-radius: var(--r-pill);
+  border: 2px dashed var(--line);
+  background: var(--cloud-soft);
+  color: var(--ink); font-size: 15px; font-weight: 500;
+  box-shadow: var(--shadow-inset);
+  transition: border-color .3s var(--ease), box-shadow .3s var(--ease);
+}
+.search__input::placeholder { color: var(--ink-soft); }
+.search__input:focus { outline: none; border-color: var(--blue); }
+.search__results {
+  position: absolute; top: 56px; left: 0; right: 0;
+  background: var(--cloud); border: 5px solid #fff;
+  border-radius: 22px; box-shadow: var(--shadow-lift);
+  padding: 8px; z-index: 60; max-height: 360px; overflow-y: auto;
+}
+.search__result {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--r-sm); cursor: pointer;
+}
+.search__result:hover { background: var(--blue-soft); }
+.search__result small { color: var(--ink-soft); margin-left: auto; }
+
+.topbar__actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+
+.profile {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 14px 6px 6px;
+  border-radius: var(--r-pill);
+  background: var(--cloud-soft);
+  border: 2px dashed var(--line);
+  box-shadow: var(--shadow-soft);
+  transition: transform .3s var(--ease);
+}
+.profile:hover { transform: translateY(-2px); }
+.profile__avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(180deg, var(--pink), #e56f95);
+  color: #fff; font-weight: 700; font-size: 14px;
+  display: grid; place-items: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,.15);
+}
+.profile__name { font-weight: 600; font-size: 14px; }
+
+/* Painel de notificações */
+.notif-panel {
+  position: absolute; top: calc(var(--topbar-h) - 6px); right: 120px;
+  width: 340px; max-height: 420px; overflow-y: auto;
+  background: var(--cloud); border: 5px solid #fff;
+  border-radius: 24px; box-shadow: var(--shadow-lift);
+  padding: 10px; z-index: 70;
+}
+.notif-panel h4 { padding: 6px 8px 10px; }
+.notif-item {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; border-radius: var(--r-sm);
+  background: var(--cloud-soft); margin-bottom: 8px;
+}
+.notif-item__ico { font-size: 18px; }
+.notif-item__txt { font-size: 13px; }
+.notif-item__txt small { display: block; color: var(--ink-soft); margin-top: 2px; }
+.notif-empty { text-align: center; color: var(--ink-soft); padding: 24px 8px; }
+
+/* Overlay (mobile) */
+.overlay {
+  position: fixed; inset: 0; background: rgba(93,64,55,.35);
+  z-index: 39; backdrop-filter: blur(1px);
+}
+
+/* Utilidades */
+.hidden { display: none !important; }
+[hidden] { display: none !important; }
